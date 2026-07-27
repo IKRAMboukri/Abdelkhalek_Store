@@ -1,0 +1,23 @@
+import { InvoiceService } from './mock/InvoiceService';
+import { ProductService } from './mock/ProductService';
+import { CategoryService } from './mock/CategoryService';
+import { CustomerService } from './mock/CustomerService';
+import { SaleService } from './mock/SaleService';
+import { CreditService } from './mock/CreditService';
+import { InventoryService } from './mock/InventoryService';
+import { PaymentService } from './mock/PaymentService';
+import { NotificationService } from './mock/NotificationService';
+import { SettingsService } from './mock/SettingsService';
+import { DashboardService } from './mock/DashboardService';
+
+export const invoiceService = new InvoiceService();
+export const productService = new ProductService();
+export const categoryService = new CategoryService();
+export const customerService = new CustomerService();
+export const saleService = new SaleService();
+export const creditService = new CreditService();
+export const inventoryService = new InventoryService();
+export const paymentService = new PaymentService();
+export const notificationService = new NotificationService();
+export const settingsService = new SettingsService();
+export const dashboardService = new DashboardService();
