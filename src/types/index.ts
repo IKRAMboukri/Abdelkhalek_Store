@@ -49,6 +49,7 @@ export interface Sale {
   items: SaleItem[];
   subtotal: number;
   discount: number;
+  adjustedPrice?: number;
   total: number;
   paymentMethod: 'cash' | 'card' | 'bank_transfer';
   status: 'completed' | 'pending' | 'cancelled' | 'refunded';
@@ -236,15 +237,24 @@ export interface Invoice {
   saleId: string
   invoiceNumber: string
   storeName: string
-  storeLogo: string
+  storeAddress: string
   storePhone: string
+  storeEmail: string
+  storeLogo: string
   customerId: string
   customerName: string
   customerPhone: string
+  customerAddress: string
   items: InvoiceItem[]
+  subtotal: number
+  discount: number
+  adjustedPrice?: number
   total: number
+  paymentMethod: 'cash' | 'card' | 'bank_transfer'
   amountPaid: number
   remainingBalance: number
+  status: 'completed' | 'pending' | 'cancelled' | 'refunded'
+  notes: string
   createdAt: string
 }
 

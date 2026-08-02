@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, Plus, Trash2, Minus, ShoppingCart, User, Printer } from 'lucide-react'
+import { Search, Plus, Trash2, Minus, ShoppingCart, User, Printer, Pencil } from 'lucide-react'
 import type { Customer, Product, StoreSettings, SaleItem, Invoice } from '@/types'
 
 import { Button } from '@/components/ui/Button'
@@ -31,9 +31,12 @@ export function NewSale() {
 
   const [selectedCustomerId, setSelectedCustomerId] = useState('')
   const [cartItems, setCartItems] = useState<CartItem[]>([])
-  const [discount, setDiscount] = useState(0)
+  const [adjustedPrice, setAdjustedPrice] = useState(0)
   const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card' | 'bank_transfer'>('cash')
   const [notes, setNotes] = useState('')
+
+  const [showPriceModal, setShowPriceModal] = useState(false)
+  const [priceInput, setPriceInput] = useState(0)
 
   const [productSearchTerm, setProductSearchTerm] = useState('')
   const [customerSearchTerm, setCustomerSearchTerm] = useState('')
@@ -123,6 +126,17 @@ export function NewSale() {
     )
   }
 
+  const updateUnitPrice = (productId: string, unitPrice: number) => {
+    if (unitPrice < 0) return
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.productId === productId
+          ? { ...item, unitPrice, total: Math.round(item.quantity * unitPrice * 100) / 100 }
+          : item,
+      ),
+    )
+  }
+
   const removeFromCart = (productId: string) => {
     setCartItems((prev) => prev.filter((item) => item.productId !== productId))
   }
@@ -133,12 +147,21 @@ export function NewSale() {
   )
 
   const total = useMemo(() => {
-    const afterDiscount = subtotal - discount
-    if (afterDiscount <= 0) return 0
-    return Math.round(afterDiscount * 100) / 100
-  }, [subtotal, discount])
+    if (adjustedPrice > 0) return Math.round(adjustedPrice * 100) / 100
+    return Math.round(subtotal * 100) / 100
+  }, [subtotal, adjustedPrice])
 
   const currencySymbol = settings?.currencySymbol ?? 'DH'
+
+  const openPriceModal = () => {
+    setPriceInput(total)
+    setShowPriceModal(true)
+  }
+
+  const handleSavePrice = () => {
+    setAdjustedPrice(priceInput)
+    setShowPriceModal(false)
+  }
 
   const validate = (): string | null => {
     if (!selectedCustomerId) return t('sales.customerRequired')
@@ -160,7 +183,8 @@ export function NewSale() {
         customerName: selectedCustomer?.name ?? '',
         items: cartItems,
         subtotal,
-        discount,
+        discount: 0,
+        adjustedPrice,
         total,
         invoiceNumber: 'INV-TEMP-' + Date.now(),
         paymentMethod,
@@ -192,6 +216,7 @@ export function NewSale() {
         })),
         subtotal: createdSale.subtotal,
         discount: createdSale.discount,
+        adjustedPrice: createdSale.adjustedPrice ?? 0,
         total: createdSale.total,
         paymentMethod: createdSale.paymentMethod,
         amountPaid: createdSale.total,
@@ -362,9 +387,20 @@ export function NewSale() {
                       {cartItems.map((item) => (
                         <tr key={item.productId} className="border-b border-border">
                           <td className="py-2 text-text-primary">{item.productName}</td>
-                          <td className="py-2 text-right text-text-primary">
-                            {currencySymbol}
-                            {item.unitPrice.toFixed(2)}
+                          <td className="py-2 text-right">
+                            <div className="inline-flex items-center justify-end gap-1">
+                              <span className="text-text-muted">{currencySymbol}</span>
+                              <input
+                                type="number"
+                                min={0}
+                                step={0.01}
+                                value={item.unitPrice || ''}
+                                onChange={(e) =>
+                                  updateUnitPrice(item.productId, Number(e.target.value) || 0)
+                                }
+                                className="w-24 rounded-lg border border-border bg-white px-2 py-1 text-sm text-right text-text-primary focus:outline-hidden focus:ring-2 focus:ring-primary-500"
+                              />
+                            </div>
                           </td>
                           <td className="py-2 text-right">
                             <div className="inline-flex items-center gap-1">
@@ -455,16 +491,6 @@ export function NewSale() {
             <div className="sticky top-6">
               <Card title={t('common.orderSummary')}>
                 <div className="space-y-3">
-                  <Input
-                    label={t('common.discount')}
-                    type="number"
-                    min={0}
-                    step={0.01}
-                    value={discount || ''}
-                    onChange={(e) => setDiscount(Number(e.target.value) || 0)}
-                    placeholder="0.00"
-                  />
-
                   <div className="space-y-2 pt-2">
                     <div className="flex justify-between text-sm">
                       <span className="text-text-muted">{t('common.subtotal')}</span>
@@ -473,21 +499,31 @@ export function NewSale() {
                         {subtotal.toFixed(2)}
                       </span>
                     </div>
-                    {discount > 0 && (
+                    {adjustedPrice > 0 && (
                       <div className="flex justify-between text-sm">
-                        <span className="text-text-muted">{t('common.discount')}</span>
-                        <span className="text-red-600">
-                          -{currencySymbol}
-                          {discount.toFixed(2)}
+                        <span className="text-text-muted">{t('sales.adjustedPrice')}</span>
+                        <span className="text-text-primary">
+                          {currencySymbol}
+                          {adjustedPrice.toFixed(2)}
                         </span>
                       </div>
                     )}
-                    <div className="flex justify-between text-lg font-bold border-t border-border pt-2">
+                    <div className="flex justify-between items-center text-lg font-bold border-t border-border pt-2">
                       <span className="text-text-primary">{t('common.total')}</span>
-                      <span className="text-text-primary">
-                        {currencySymbol}
-                        {total.toFixed(2)}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-text-primary">
+                          {currencySymbol}
+                          {total.toFixed(2)}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={openPriceModal}
+                          title={t('sales.editPrice')}
+                          className="p-1.5 rounded-lg text-text-muted hover:text-primary-600 hover:bg-primary-50 transition-colors cursor-pointer"
+                        >
+                          <Pencil size={14} />
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -571,6 +607,43 @@ export function NewSale() {
         }
       >
         {completedInvoice && <InvoiceDocument invoice={completedInvoice} />}
+      </Modal>
+
+      <Modal
+        open={showPriceModal}
+        onClose={() => setShowPriceModal(false)}
+        title={t('sales.editPrice')}
+        size="sm"
+        footer={
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => setShowPriceModal(false)}>
+              {t('common.cancel')}
+            </Button>
+            <Button onClick={handleSavePrice}>
+              {t('common.save')}
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-4">
+          <div className="flex justify-between text-sm">
+            <span className="text-text-muted">{t('common.subtotal')}</span>
+            <span className="text-text-primary font-medium">
+              {currencySymbol}
+              {subtotal.toFixed(2)}
+            </span>
+          </div>
+          <Input
+            label={t('sales.adjustedPrice')}
+            type="number"
+            min={0}
+            step={0.01}
+            value={priceInput || ''}
+            onChange={(e) => setPriceInput(Number(e.target.value) || 0)}
+            placeholder="0.00"
+          />
+          <p className="text-xs text-text-muted">{t('sales.adjustedPriceHint')}</p>
+        </div>
       </Modal>
     </>
   )
