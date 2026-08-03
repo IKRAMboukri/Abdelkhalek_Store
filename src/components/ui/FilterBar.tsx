@@ -17,6 +17,7 @@ interface FilterBarProps {
   values: Record<string, string>
   onChange: (key: string, value: string) => void
   className?: string
+  compact?: boolean
 }
 
 export function FilterBar({
@@ -24,12 +25,14 @@ export function FilterBar({
   values,
   onChange,
   className,
+  compact = false,
 }: FilterBarProps) {
   const { t } = useLocale()
   return (
     <div
       className={clsx(
-        'flex flex-wrap items-end gap-3 py-3',
+        'flex flex-wrap gap-3',
+        compact ? 'items-center' : 'items-end py-3',
         className,
       )}
     >
@@ -44,7 +47,7 @@ export function FilterBar({
             />
           ) : (
             <Select
-              label={filter.label}
+              label={compact ? undefined : filter.label}
               value={values[filter.key] ?? ''}
               onChange={(e) => onChange(filter.key, e.target.value)}
               options={[
