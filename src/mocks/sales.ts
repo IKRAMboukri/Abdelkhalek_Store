@@ -273,7 +273,7 @@ export const mockSales: Sale[] = [
     subtotal: 1726,
     discount: 86,
     total: 1777,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: 'Delivered to home address. Customer very satisfied.',
     createdAt: '2025-01-05T10:30:00Z'
@@ -301,7 +301,7 @@ export const mockSales: Sale[] = [
     subtotal: 1358,
     discount: 68,
     total: 1398,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-01-10T11:00:00Z'
@@ -329,7 +329,7 @@ export const mockSales: Sale[] = [
     subtotal: 1517,
     discount: 0,
     total: 1642,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: 'New home purchase.',
     createdAt: '2025-01-15T15:30:00Z'
@@ -343,7 +343,7 @@ export const mockSales: Sale[] = [
     subtotal: 2748,
     discount: 137,
     total: 2831,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: 'Design project for client.',
     createdAt: '2025-01-18T10:45:00Z'
@@ -385,7 +385,7 @@ export const mockSales: Sale[] = [
     subtotal: 1178,
     discount: 59,
     total: 1213,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-01-25T11:15:00Z'
@@ -413,7 +413,7 @@ export const mockSales: Sale[] = [
     subtotal: 728,
     discount: 36,
     total: 750,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-02-01T14:00:00Z'
@@ -441,7 +441,7 @@ export const mockSales: Sale[] = [
     subtotal: 879,
     discount: 44,
     total: 905,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-02-05T10:00:00Z'
@@ -455,7 +455,7 @@ export const mockSales: Sale[] = [
     subtotal: 2627,
     discount: 0,
     total: 2844,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: 'Master bedroom suite.',
     createdAt: '2025-02-08T12:15:00Z'
@@ -497,7 +497,7 @@ export const mockSales: Sale[] = [
     subtotal: 777,
     discount: 0,
     total: 841,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-02-15T11:30:00Z'
@@ -525,7 +525,7 @@ export const mockSales: Sale[] = [
     subtotal: 548,
     discount: 27,
     total: 565,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-02-20T14:45:00Z'
@@ -553,7 +553,7 @@ export const mockSales: Sale[] = [
     subtotal: 2078,
     discount: 0,
     total: 2249,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: 'Dining room for client project.',
     createdAt: '2025-02-25T11:00:00Z'
@@ -567,7 +567,7 @@ export const mockSales: Sale[] = [
     subtotal: 1297,
     discount: 65,
     total: 1336,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: 'International shipping.',
     createdAt: '2025-03-01T15:00:00Z'
@@ -609,7 +609,7 @@ export const mockSales: Sale[] = [
     subtotal: 1707,
     discount: 85,
     total: 1756,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: 'Kitchen renovation.',
     createdAt: '2025-03-08T12:45:00Z'
@@ -651,7 +651,7 @@ export const mockSales: Sale[] = [
     subtotal: 639,
     discount: 32,
     total: 658,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-03-15T14:00:00Z'
@@ -679,7 +679,7 @@ export const mockSales: Sale[] = [
     subtotal: 1456,
     discount: 73,
     total: 1499,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: 'Bedroom furniture for guest room.',
     createdAt: '2025-03-20T10:00:00Z'
@@ -721,7 +721,7 @@ export const mockSales: Sale[] = [
     subtotal: 639,
     discount: 32,
     total: 658,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-03-28T11:00:00Z'
@@ -749,7 +749,7 @@ export const mockSales: Sale[] = [
     subtotal: 3845,
     discount: 0,
     total: 4162,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: 'Office furniture for design client.',
     createdAt: '2025-04-03T10:15:00Z'
@@ -833,7 +833,7 @@ export const mockSales: Sale[] = [
     subtotal: 2597,
     discount: 0,
     total: 2811,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-04-18T16:00:00Z'
@@ -861,7 +861,7 @@ export const mockSales: Sale[] = [
     subtotal: 796,
     discount: 40,
     total: 820,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: 'Content shoot props.',
     createdAt: '2025-04-22T14:15:00Z'
@@ -875,7 +875,7 @@ export const mockSales: Sale[] = [
     subtotal: 837,
     discount: 42,
     total: 862,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-04-25T11:00:00Z'
@@ -903,7 +903,7 @@ export const mockSales: Sale[] = [
     subtotal: 1002,
     discount: 50,
     total: 1032,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: 'Bathroom renovation items.',
     createdAt: '2025-05-01T13:30:00Z'
@@ -917,7 +917,7 @@ export const mockSales: Sale[] = [
     subtotal: 657,
     discount: 0,
     total: 711,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: 'UK shipping.',
     createdAt: '2025-05-03T15:00:00Z'
@@ -959,7 +959,7 @@ export const mockSales: Sale[] = [
     subtotal: 751,
     discount: 38,
     total: 773,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-05-10T12:00:00Z'
@@ -973,7 +973,7 @@ export const mockSales: Sale[] = [
     subtotal: 658,
     discount: 0,
     total: 712,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: 'Accessories for client project.',
     createdAt: '2025-05-12T14:45:00Z'
@@ -1029,7 +1029,7 @@ export const mockSales: Sale[] = [
     subtotal: 938,
     discount: 47,
     total: 966,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-05-22T15:30:00Z'
@@ -1071,7 +1071,7 @@ export const mockSales: Sale[] = [
     subtotal: 627,
     discount: 0,
     total: 679,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-06-01T14:00:00Z'
@@ -1099,7 +1099,7 @@ export const mockSales: Sale[] = [
     subtotal: 657,
     discount: 33,
     total: 677,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-06-05T10:15:00Z'
@@ -1113,7 +1113,7 @@ export const mockSales: Sale[] = [
     subtotal: 607,
     discount: 0,
     total: 657,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-06-08T13:00:00Z'
@@ -1141,7 +1141,7 @@ export const mockSales: Sale[] = [
     subtotal: 777,
     discount: 39,
     total: 800,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-06-12T11:30:00Z'
@@ -1211,7 +1211,7 @@ export const mockSales: Sale[] = [
     subtotal: 738,
     discount: 37,
     total: 760,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: 'Apartment furnishing.',
     createdAt: '2025-06-20T10:30:00Z'
@@ -1225,7 +1225,7 @@ export const mockSales: Sale[] = [
     subtotal: 1298,
     discount: 0,
     total: 1405,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: 'Home office setup.',
     createdAt: '2025-06-21T14:00:00Z'
@@ -1239,7 +1239,7 @@ export const mockSales: Sale[] = [
     subtotal: 1198,
     discount: 60,
     total: 1234,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-06-22T11:15:00Z'
@@ -1253,7 +1253,7 @@ export const mockSales: Sale[] = [
     subtotal: 928,
     discount: 46,
     total: 956,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-06-23T09:45:00Z'
@@ -1281,7 +1281,7 @@ export const mockSales: Sale[] = [
     subtotal: 1447,
     discount: 72,
     total: 1491,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-06-25T15:30:00Z'
@@ -1295,7 +1295,7 @@ export const mockSales: Sale[] = [
     subtotal: 878,
     discount: 0,
     total: 950,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-06-26T12:00:00Z'
@@ -1351,7 +1351,7 @@ export const mockSales: Sale[] = [
     subtotal: 1298,
     discount: 65,
     total: 1337,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'pending',
     notes: 'Payment pending. Follow up required.',
     createdAt: '2025-06-30T14:00:00Z'
@@ -1365,7 +1365,7 @@ export const mockSales: Sale[] = [
     subtotal: 698,
     discount: 35,
     total: 719,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'pending',
     notes: 'Credit check pending.',
     createdAt: '2025-06-30T15:30:00Z'
@@ -1393,7 +1393,7 @@ export const mockSales: Sale[] = [
     subtotal: 268,
     discount: 13,
     total: 276,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: 'Art studio supplies.',
     createdAt: '2025-07-02T10:30:00Z'
@@ -1407,7 +1407,7 @@ export const mockSales: Sale[] = [
     subtotal: 348,
     discount: 17,
     total: 359,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-07-03T14:15:00Z'
@@ -1421,7 +1421,7 @@ export const mockSales: Sale[] = [
     subtotal: 1099,
     discount: 55,
     total: 1132,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-07-04T12:00:00Z'
@@ -1435,7 +1435,7 @@ export const mockSales: Sale[] = [
     subtotal: 1138,
     discount: 57,
     total: 1172,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-07-05T09:00:00Z'
@@ -1449,7 +1449,7 @@ export const mockSales: Sale[] = [
     subtotal: 1853,
     discount: 93,
     total: 1908,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-07-06T10:00:00Z'
@@ -1463,7 +1463,7 @@ export const mockSales: Sale[] = [
     subtotal: 1049,
     discount: 52,
     total: 1081,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: '',
     createdAt: '2025-01-03T11:00:00Z'
@@ -1477,7 +1477,7 @@ export const mockSales: Sale[] = [
     subtotal: 1338,
     discount: 67,
     total: 1378,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'completed',
     notes: 'Home theater seating.',
     createdAt: '2025-06-20T16:00:00Z'
@@ -1491,7 +1491,7 @@ export const mockSales: Sale[] = [
     subtotal: 1337,
     discount: 0,
     total: 1447,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'cancelled',
     notes: 'Order cancelled by customer.',
     createdAt: '2025-06-15T09:00:00Z'
@@ -1505,7 +1505,7 @@ export const mockSales: Sale[] = [
     subtotal: 698,
     discount: 35,
     total: 719,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'refunded',
     notes: 'Full refund processed due to damaged items.',
     createdAt: '2025-06-05T14:30:00Z'
@@ -1519,7 +1519,7 @@ export const mockSales: Sale[] = [
     subtotal: 399,
     discount: 20,
     total: 411,
-    paymentMethod: 'card',
+    paymentMethod: 'bank_transfer',
     status: 'pending',
     notes: 'Awaiting payment confirmation.',
     createdAt: '2025-07-06T08:00:00Z'

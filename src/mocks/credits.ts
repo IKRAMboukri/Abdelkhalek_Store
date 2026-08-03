@@ -56,9 +56,9 @@ export const mockCredits: Credit[] = [
     status: 'active',
     notes: 'Credit for bedroom furniture purchase.',
     payments: [
-      { id: 'cp-11', amount: 400, paymentMethod: 'card', paymentDate: '2025-05-01T14:00:00Z', notes: 'May payment' },
-      { id: 'cp-12', amount: 400, paymentMethod: 'card', paymentDate: '2025-06-01T14:00:00Z', notes: 'June payment' },
-      { id: 'cp-13', amount: 400, paymentMethod: 'card', paymentDate: '2025-07-01T14:00:00Z', notes: 'July payment' }
+      { id: 'cp-11', amount: 400,     paymentMethod: 'bank_transfer', paymentDate: '2025-05-01T14:00:00Z', notes: 'May payment' },
+      { id: 'cp-12', amount: 400,     paymentMethod: 'bank_transfer', paymentDate: '2025-06-01T14:00:00Z', notes: 'June payment' },
+      { id: 'cp-13', amount: 400,     paymentMethod: 'bank_transfer', paymentDate: '2025-07-01T14:00:00Z', notes: 'July payment' }
     ],
     createdAt: '2025-04-01T10:00:00Z',
     updatedAt: '2025-07-01T14:00:00Z',
@@ -223,7 +223,7 @@ export const mockCredits: Credit[] = [
     status: 'active',
     notes: 'Credit for decor and accent pieces.',
     payments: [
-      { id: 'cp-42', amount: 300, paymentMethod: 'card', paymentDate: '2025-07-01T15:00:00Z', notes: 'First payment' }
+      { id: 'cp-42', amount: 300,     paymentMethod: 'bank_transfer', paymentDate: '2025-07-01T15:00:00Z', notes: 'First payment' }
     ],
     createdAt: '2025-06-01T11:00:00Z',
     updatedAt: '2025-07-01T15:00:00Z',
@@ -241,9 +241,9 @@ export const mockCredits: Credit[] = [
     status: 'active',
     notes: 'Small credit for apartment furnishing.',
     payments: [
-      { id: 'cp-43', amount: 200, paymentMethod: 'card', paymentDate: '2025-06-01T12:00:00Z', notes: 'June' },
-      { id: 'cp-44', amount: 250, paymentMethod: 'card', paymentDate: '2025-07-01T12:00:00Z', notes: 'July' },
-      { id: 'cp-45', amount: 200, paymentMethod: 'card', paymentDate: '2025-07-20T12:00:00Z', notes: 'Extra payment' }
+      { id: 'cp-43', amount: 200,     paymentMethod: 'bank_transfer', paymentDate: '2025-06-01T12:00:00Z', notes: 'June' },
+      { id: 'cp-44', amount: 250,     paymentMethod: 'bank_transfer', paymentDate: '2025-07-01T12:00:00Z', notes: 'July' },
+      { id: 'cp-45', amount: 200,     paymentMethod: 'bank_transfer', paymentDate: '2025-07-20T12:00:00Z', notes: 'Extra payment' }
     ],
     createdAt: '2025-05-01T09:00:00Z',
     updatedAt: '2025-07-20T12:00:00Z',
@@ -261,8 +261,8 @@ export const mockCredits: Credit[] = [
     status: 'overdue',
     notes: 'Overdue payment. Follow up needed.',
     payments: [
-      { id: 'cp-46', amount: 500, paymentMethod: 'card', paymentDate: '2025-05-01T10:00:00Z', notes: 'May payment' },
-      { id: 'cp-47', amount: 500, paymentMethod: 'card', paymentDate: '2025-06-01T10:00:00Z', notes: 'June payment' }
+      { id: 'cp-46', amount: 500,     paymentMethod: 'bank_transfer', paymentDate: '2025-05-01T10:00:00Z', notes: 'May payment' },
+      { id: 'cp-47', amount: 500,     paymentMethod: 'bank_transfer', paymentDate: '2025-06-01T10:00:00Z', notes: 'June payment' }
     ],
     createdAt: '2025-04-05T10:00:00Z',
     updatedAt: '2025-07-01T10:00:00Z',
@@ -280,8 +280,8 @@ export const mockCredits: Credit[] = [
     status: 'overdue',
     notes: 'Past due date. Second reminder sent.',
     payments: [
-      { id: 'cp-48', amount: 250, paymentMethod: 'card', paymentDate: '2025-05-15T14:00:00Z', notes: 'First payment' },
-      { id: 'cp-49', amount: 200, paymentMethod: 'card', paymentDate: '2025-06-15T14:00:00Z', notes: 'Second payment' }
+      { id: 'cp-48', amount: 250,     paymentMethod: 'bank_transfer', paymentDate: '2025-05-15T14:00:00Z', notes: 'First payment' },
+      { id: 'cp-49', amount: 200,     paymentMethod: 'bank_transfer', paymentDate: '2025-06-15T14:00:00Z', notes: 'Second payment' }
     ],
     createdAt: '2025-04-20T11:00:00Z',
     updatedAt: '2025-06-30T14:00:00Z',
@@ -299,9 +299,9 @@ export const mockCredits: Credit[] = [
     status: 'overdue',
     notes: 'Seriously overdue. Account has been blocked.',
     payments: [
-      { id: 'cp-50', amount: 500, paymentMethod: 'card', paymentDate: '2025-03-15T10:00:00Z', notes: 'March payment' },
-      { id: 'cp-51', amount: 500, paymentMethod: 'card', paymentDate: '2025-04-15T10:00:00Z', notes: 'April payment' },
-      { id: 'cp-52', amount: 500, paymentMethod: 'card', paymentDate: '2025-05-15T10:00:00Z', notes: 'May payment' }
+      { id: 'cp-50', amount: 500,     paymentMethod: 'bank_transfer', paymentDate: '2025-03-15T10:00:00Z', notes: 'March payment' },
+      { id: 'cp-51', amount: 500,     paymentMethod: 'bank_transfer', paymentDate: '2025-04-15T10:00:00Z', notes: 'April payment' },
+      { id: 'cp-52', amount: 500,     paymentMethod: 'bank_transfer', paymentDate: '2025-05-15T10:00:00Z', notes: 'May payment' }
     ],
     createdAt: '2025-02-15T09:00:00Z',
     updatedAt: '2025-05-15T10:00:00Z',
@@ -319,8 +319,8 @@ export const mockCredits: Credit[] = [
     status: 'active',
     notes: 'Credit for decor content creation supplies.',
     payments: [
-      { id: 'cp-53', amount: 200, paymentMethod: 'card', paymentDate: '2025-07-01T16:00:00Z', notes: 'July payment' },
-      { id: 'cp-54', amount: 200, paymentMethod: 'card', paymentDate: '2025-08-01T16:00:00Z', notes: 'August payment' }
+      { id: 'cp-53', amount: 200,     paymentMethod: 'bank_transfer', paymentDate: '2025-07-01T16:00:00Z', notes: 'July payment' },
+      { id: 'cp-54', amount: 200,     paymentMethod: 'bank_transfer', paymentDate: '2025-08-01T16:00:00Z', notes: 'August payment' }
     ],
     createdAt: '2025-06-15T10:00:00Z',
     updatedAt: '2025-08-01T16:00:00Z',
@@ -358,8 +358,8 @@ export const mockCredits: Credit[] = [
     status: 'active',
     notes: 'Small credit for art studio supplies.',
     payments: [
-      { id: 'cp-58', amount: 200, paymentMethod: 'card', paymentDate: '2025-07-15T12:00:00Z', notes: 'First payment' },
-      { id: 'cp-59', amount: 200, paymentMethod: 'card', paymentDate: '2025-08-15T12:00:00Z', notes: 'Second payment' }
+      { id: 'cp-58', amount: 200,     paymentMethod: 'bank_transfer', paymentDate: '2025-07-15T12:00:00Z', notes: 'First payment' },
+      { id: 'cp-59', amount: 200,     paymentMethod: 'bank_transfer', paymentDate: '2025-08-15T12:00:00Z', notes: 'Second payment' }
     ],
     createdAt: '2025-07-01T09:00:00Z',
     updatedAt: '2025-08-15T12:00:00Z',
@@ -398,10 +398,10 @@ export const mockCredits: Credit[] = [
     status: 'paid',
     notes: 'Fully paid.',
     payments: [
-      { id: 'cp-64', amount: 500, paymentMethod: 'card', paymentDate: '2025-02-01T10:00:00Z', notes: 'Feb' },
-      { id: 'cp-65', amount: 500, paymentMethod: 'card', paymentDate: '2025-03-01T10:00:00Z', notes: 'Mar' },
-      { id: 'cp-66', amount: 500, paymentMethod: 'card', paymentDate: '2025-04-01T10:00:00Z', notes: 'Apr' },
-      { id: 'cp-67', amount: 500, paymentMethod: 'card', paymentDate: '2025-05-01T10:00:00Z', notes: 'Final' }
+      { id: 'cp-64', amount: 500,     paymentMethod: 'bank_transfer', paymentDate: '2025-02-01T10:00:00Z', notes: 'Feb' },
+      { id: 'cp-65', amount: 500,     paymentMethod: 'bank_transfer', paymentDate: '2025-03-01T10:00:00Z', notes: 'Mar' },
+      { id: 'cp-66', amount: 500,     paymentMethod: 'bank_transfer', paymentDate: '2025-04-01T10:00:00Z', notes: 'Apr' },
+      { id: 'cp-67', amount: 500,     paymentMethod: 'bank_transfer', paymentDate: '2025-05-01T10:00:00Z', notes: 'Final' }
     ],
     createdAt: '2025-01-15T10:00:00Z',
     updatedAt: '2025-05-01T10:00:00Z',
