@@ -50,7 +50,7 @@ export interface Sale {
   subtotal: number;
   discount: number;
   total: number;
-  paymentMethod: 'cash' | 'card' | 'bank_transfer';
+  paymentMethod: 'cash' | 'bank_transfer';
   status: 'completed' | 'pending' | 'cancelled' | 'refunded';
   notes: string;
   createdAt: string;
@@ -84,7 +84,7 @@ export interface Credit {
 export interface CreditPayment {
   id: string;
   amount: number;
-  paymentMethod: 'cash' | 'card' | 'bank_transfer';
+  paymentMethod: 'cash' | 'bank_transfer';
   paymentDate: string;
   notes: string;
 }
@@ -109,7 +109,7 @@ export interface Payment {
   customerId: string;
   customerName: string;
   amount: number;
-  method: 'cash' | 'card' | 'bank_transfer';
+  method: 'cash' | 'bank_transfer';
   status: 'completed' | 'pending' | 'failed' | 'refunded';
   reference: string;
   notes: string;
@@ -238,13 +238,21 @@ export interface Invoice {
   storeName: string
   storeLogo: string
   storePhone: string
+  storeAddress: string
+  storeEmail: string
   customerId: string
   customerName: string
   customerPhone: string
+  customerAddress: string
   items: InvoiceItem[]
+  subtotal: number
+  discount: number
   total: number
   amountPaid: number
   remainingBalance: number
+  paymentMethod: 'cash' | 'bank_transfer'
+  status: 'completed' | 'pending' | 'cancelled' | 'refunded'
+  notes: string
   createdAt: string
 }
 

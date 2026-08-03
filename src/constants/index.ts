@@ -130,7 +130,6 @@ export const STATUS_COLORS: Record<string, string> = {
 
 export const PAYMENT_METHODS = [
   { value: 'cash', label: 'Cash' },
-  { value: 'card', label: 'Card' },
   { value: 'bank_transfer', label: 'Bank Transfer' },
 ] as const;
 

@@ -71,7 +71,6 @@ export const ar = {
     failed: 'فشل',
     refunded: 'مسترجع',
     cash: 'نقدي',
-    card: 'بطاقة',
     bankTransfer: 'تحويل بنكي',
     exportComingSoon: 'قريباً - تصدير قيد التطوير',
     noDescription: 'لا يوجد وصف.',

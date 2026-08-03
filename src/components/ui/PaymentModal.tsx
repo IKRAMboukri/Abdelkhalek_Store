@@ -16,7 +16,6 @@ export function PaymentModal({ open, onClose, onConfirm, maxAmount, loading = fa
   const { t } = useLocale()
   const methodOptions: SelectOption[] = [
     { value: 'cash', label: t('common.cash') },
-    { value: 'card', label: t('common.card') },
     { value: 'bank_transfer', label: t('common.bankTransfer') },
   ]
   const [amount, setAmount] = useState('')

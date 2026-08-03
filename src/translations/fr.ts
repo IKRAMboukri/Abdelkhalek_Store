@@ -71,7 +71,6 @@ export const fr = {
     failed: 'Échoué',
     refunded: 'Remboursé',
     cash: 'Espèces',
-    card: 'Carte',
     bankTransfer: 'Virement Bancaire',
     exportComingSoon: 'Bientôt disponible - Fonctionnalité d\'exportation en développement',
     noDescription: 'Aucune description fournie.',

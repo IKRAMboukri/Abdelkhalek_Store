@@ -32,7 +32,7 @@ export function NewSale() {
   const [selectedCustomerId, setSelectedCustomerId] = useState('')
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [discount, setDiscount] = useState(0)
-  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card' | 'bank_transfer'>('cash')
+  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'bank_transfer'>('cash')
   const [notes, setNotes] = useState('')
 
   const [productSearchTerm, setProductSearchTerm] = useState('')
@@ -415,7 +415,6 @@ export function NewSale() {
                   <div className="flex flex-wrap gap-3">
                     {[
                       { value: 'cash', label: t('common.cash') },
-                      { value: 'card', label: t('common.card') },
                       { value: 'bank_transfer', label: t('common.bankTransfer') },
                     ].map((pm) => (
                       <label
@@ -539,7 +538,6 @@ export function NewSale() {
                     <span className="capitalize">
                       {({
                         cash: t('common.cash'),
-                        card: t('common.card'),
                         bank_transfer: t('common.bankTransfer'),
                       } as Record<string, string>)[paymentMethod] ?? paymentMethod}
                     </span>

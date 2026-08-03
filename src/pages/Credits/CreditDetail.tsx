@@ -122,7 +122,7 @@ export function CreditDetail() {
       key: 'paymentMethod',
       label: t('payments.method'),
       render: (payment) => {
-        const labels: Record<string, string> = { cash: t('common.cash'), card: t('common.card'), bank_transfer: t('common.bankTransfer') }
+        const labels: Record<string, string> = { cash: t('common.cash'), bank_transfer: t('common.bankTransfer') }
         return labels[payment.paymentMethod] ?? payment.paymentMethod
       },
     },
@@ -326,7 +326,6 @@ export function CreditDetail() {
             onChange={(e) => setPaymentMethod(e.target.value)}
             options={[
               { value: 'cash', label: t('common.cash') },
-              { value: 'card', label: t('common.card') },
               { value: 'bank_transfer', label: t('common.bankTransfer') },
             ]}
           />

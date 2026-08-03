@@ -71,7 +71,6 @@ export const en = {
     failed: 'Failed',
     refunded: 'Refunded',
     cash: 'Cash',
-    card: 'Card',
     bankTransfer: 'Bank Transfer',
     exportComingSoon: 'Coming soon - Export functionality in development',
     noDescription: 'No description provided.',

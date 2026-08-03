@@ -584,7 +584,6 @@ export function CreditManage() {
             onChange={(e) => setPaymentMethod(e.target.value)}
             options={[
               { value: 'cash', label: t('common.cash') },
-              { value: 'card', label: t('common.card') },
               { value: 'bank_transfer', label: t('common.bankTransfer') },
             ]}
             className="h-10"
