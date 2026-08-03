@@ -172,17 +172,13 @@ export function CustomerList() {
       ),
     },
     {
-      key: 'email',
-      label: t('common.email'),
-    },
-    {
       key: 'phone',
       label: t('common.phone'),
     },
     {
-      key: 'company',
-      label: t('customers.company'),
-      render: (item) => item.company || '-',
+      key: 'address',
+      label: t('common.address'),
+      render: (item) => item.address || '-',
     },
     {
       key: 'totalPurchases',
@@ -247,7 +243,7 @@ export function CustomerList() {
 
         <Card padding={false}>
           <div className="p-4 pb-0">
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <SearchBar
                 value={search}
                 onChange={(val) => {
@@ -255,12 +251,14 @@ export function CustomerList() {
                   setPage(1)
                 }}
                 placeholder={t('customers.searchPlaceholder')}
-                className="flex-1"
+                className="w-full sm:w-72"
               />
               <FilterBar
                 filters={statusFilterConfig}
                 values={{ status: statusFilter }}
                 onChange={handleFilterChange}
+                compact
+                className="flex-1 sm:justify-end"
               />
             </div>
           </div>

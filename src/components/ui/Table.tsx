@@ -24,6 +24,7 @@ interface TableProps<T> {
   onRowClick?: (item: T) => void
   className?: string
   getRowKey?: (item: T, index: number) => string
+  dense?: boolean
 }
 
 export function Table<T>({
@@ -37,8 +38,13 @@ export function Table<T>({
   onRowClick,
   className,
   getRowKey,
+  dense = false,
 }: TableProps<T>) {
   const { t } = useLocale()
+  const cellPadding = dense ? 'px-3 py-2' : 'px-4 py-3'
+  const headerClass = dense
+    ? 'px-3 py-2 text-[11px]'
+    : 'px-4 py-3 text-xs'
   if (loading) {
     return (
       <div className={clsx('bg-surface rounded-xl border border-border shadow-sm overflow-hidden', className)}>
@@ -49,7 +55,7 @@ export function Table<T>({
                 {columns.map((col) => (
                   <th
                     key={col.key}
-                    className="px-4 py-3 text-left text-xs font-semibold text-text-muted uppercase tracking-wider"
+                    className={clsx(headerClass, 'text-left font-semibold text-text-muted uppercase tracking-wider')}
                   >
                     {col.label}
                   </th>
@@ -60,7 +66,7 @@ export function Table<T>({
               {Array.from({ length: 5 }).map((_, rowIdx) => (
                 <tr key={rowIdx} className="border-b border-border last:border-0">
                   {columns.map((col) => (
-                    <td key={col.key} className="px-4 py-3">
+                    <td key={col.key} className={cellPadding}>
                       <Skeleton variant="text" width={col.key === 'name' || col.label.length > 8 ? '70%' : '40%'} />
                     </td>
                   ))}
@@ -91,12 +97,13 @@ export function Table<T>({
           <thead>
             <tr className="border-b border-border bg-surface-secondary">
               {columns.map((col) => (
-                <th
-                  key={col.key}
-                  className={clsx(
-                    'px-4 py-3 text-left text-xs font-semibold text-text-muted uppercase tracking-wider',
-                    col.sortable && 'cursor-pointer select-none hover:text-text-primary transition-colors',
-                  )}
+                  <th
+                    key={col.key}
+                    className={clsx(
+                      headerClass,
+                      'text-left font-semibold text-text-muted uppercase tracking-wider',
+                      col.sortable && 'cursor-pointer select-none hover:text-text-primary transition-colors',
+                    )}
                   onClick={() => {
                     if (col.sortable && onSort) onSort(col.key)
                   }}
@@ -136,7 +143,7 @@ export function Table<T>({
                 }}
               >
                 {columns.map((col) => (
-                  <td key={col.key} className="px-4 py-3 text-sm text-text-primary whitespace-nowrap">
+                  <td key={col.key} className={clsx(cellPadding, 'text-left text-sm text-text-primary whitespace-nowrap', dense && 'text-[13px]')}>
                     {col.render
                       ? col.render(item, index)
                       : String((item as Record<string, unknown>)[col.key] ?? '-')}
