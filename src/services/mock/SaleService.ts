@@ -1,4 +1,4 @@
-import type { Sale, FilterOptions, PaginatedResult } from '@/types';
+import type { Sale, InventoryMovement, FilterOptions, PaginatedResult } from '@/types';
 import type { ISaleService } from '@/services/interfaces/ISaleService';
 import { mockSales } from '@/mocks/sales';
 import { mockProducts } from '@/mocks/products';
