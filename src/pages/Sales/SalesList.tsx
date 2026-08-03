@@ -229,8 +229,8 @@ export function SalesList() {
         </div>
 
         <Card padding={false}>
-          <div className="p-4 pb-0">
-            <div className="flex flex-col sm:flex-row gap-3">
+          <div className="px-4 pt-3 pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2.5">
               <SearchBar
                 value={search}
                 onChange={(val) => {
@@ -238,12 +238,14 @@ export function SalesList() {
                   setPage(1)
                 }}
                 placeholder={t('sales.searchInvoicePlaceholder')}
-                className="flex-1"
+                className="w-full sm:w-72"
               />
               <FilterBar
                 filters={filterConfig}
                 values={{ paymentMethod: paymentFilter, status: statusFilter }}
                 onChange={handleFilterChange}
+                compact
+                className="flex-1 sm:justify-end"
               />
             </div>
           </div>
@@ -271,13 +273,16 @@ export function SalesList() {
               }
             />
           ) : (
-            <Table<Sale>
-              columns={columns}
-              data={sales}
-              loading={loading}
-              emptyMessage={t('sales.noSales')}
-              onRowClick={(item) => handleView(item)}
-            />
+            <div className="mx-4">
+              <Table<Sale>
+                columns={columns}
+                data={sales}
+                loading={loading}
+                emptyMessage={t('sales.noSales')}
+                onRowClick={(item) => handleView(item)}
+                dense
+              />
+            </div>
           )}
 
           {!loading && sales.length > 0 && (
