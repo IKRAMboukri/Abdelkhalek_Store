@@ -110,7 +110,7 @@ export interface Payment {
   customerId: string;
   customerName: string;
   amount: number;
-  method: 'cash' | 'card' | 'bank_transfer';
+  method: 'cash' | 'bank_transfer';
   status: 'completed' | 'pending' | 'failed' | 'refunded';
   reference: string;
   notes: string;

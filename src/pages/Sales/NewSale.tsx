@@ -32,7 +32,7 @@ export function NewSale() {
   const [selectedCustomerId, setSelectedCustomerId] = useState('')
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [adjustedPrice, setAdjustedPrice] = useState(0)
-  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'card' | 'bank_transfer'>('cash')
+  const [paymentMethod, setPaymentMethod] = useState<'cash' | 'bank_transfer'>('cash')
   const [notes, setNotes] = useState('')
 
   const [showPriceModal, setShowPriceModal] = useState(false)
@@ -262,6 +262,7 @@ export function NewSale() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card title={t('sales.customerInfo')}>
               <div className="space-y-3">
                 <div className="relative">
@@ -364,6 +365,7 @@ export function NewSale() {
                 </div>
               </div>
             </Card>
+          </div>
 
             <Card title={t('common.cart')} subtitle={`${cartItems.length} ${t('common.itemsCount')}`}>
               {cartItems.length === 0 ? (
@@ -451,7 +453,6 @@ export function NewSale() {
                   <div className="flex flex-wrap gap-3">
                     {[
                       { value: 'cash', label: t('common.cash') },
-                      { value: 'card', label: t('common.card') },
                       { value: 'bank_transfer', label: t('common.bankTransfer') },
                     ].map((pm) => (
                       <label

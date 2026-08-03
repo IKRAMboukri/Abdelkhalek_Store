@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus, Eye, Trash2, FileText } from 'lucide-react'
 import type { Sale, PaginatedResult } from '@/types'
-
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Modal } from '@/components/ui/Modal'
@@ -32,7 +31,6 @@ export function SalesList() {
       type: 'select',
       options: [
         { value: 'cash', label: t('common.cash') },
-        { value: 'card', label: t('common.card') },
         { value: 'bank_transfer', label: t('common.bankTransfer') },
       ],
     },
@@ -165,7 +163,6 @@ export function SalesList() {
       render: (item) => {
         const labels: Record<string, string> = {
           cash: t('common.cash'),
-          card: t('common.card'),
           bank_transfer: t('common.bankTransfer'),
         }
         return <span className="capitalize">{labels[item.paymentMethod] ?? item.paymentMethod}</span>
@@ -213,7 +210,6 @@ export function SalesList() {
   const paymentMethodLabel = (method: string) => {
     const labels: Record<string, string> = {
       cash: t('common.cash'),
-      card: t('common.card'),
       bank_transfer: t('common.bankTransfer'),
     }
     return labels[method] ?? method
