@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { useLocale } from '@/hooks/useLocale'
-import type { Product, SelectOption } from '@/types'
+import type { Product, SelectOption, Category } from '@/types'
 import { categoryService } from '@/services'
 import { Button, Input, Select, Textarea } from '@/components/ui'
+import { CategorySelector } from '@/components/products/CategorySelector'
 import { Package, DollarSign, Hash, FileText, Tag, ArrowLeft, AlertTriangle, CheckCircle2, Upload, X } from 'lucide-react'
 
 interface ProductFormProps {
@@ -16,11 +17,13 @@ interface ProductFormProps {
 interface FormErrors {
   name?: string
   categoryId?: string
+  subCategoryId?: string
   purchasePrice?: string
   sellingPrice?: string
   stock?: string
   minStock?: string
   unit?: string
+  [optionId: string]: string | undefined
 }
 
 export function ProductForm({ product, onSave, onCancel, loading = false, layout = 'modal' }: ProductFormProps) {
@@ -37,7 +40,7 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
     { value: 'pair', label: t('units.pair') },
   ]
 
-  const [categories, setCategories] = useState<SelectOption[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
   const [categoriesLoading, setCategoriesLoading] = useState(true)
   const [imageFileName, setImageFileName] = useState('')
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -46,6 +49,8 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
     name: '',
     description: '',
     categoryId: '',
+    subCategoryId: '',
+    options: {} as Record<string, string>,
     purchasePrice: '',
     sellingPrice: '',
     stock: '',
@@ -55,6 +60,7 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
     barcode: '',
     image: '',
     categoryName: '',
+    subCategoryName: '',
   })
 
   const [errors, setErrors] = useState<FormErrors>({})
@@ -64,7 +70,7 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
       setCategoriesLoading(true)
       try {
         const result = await categoryService.getAllCategories()
-        setCategories(result.map(c => ({ value: c.id, label: c.name })))
+        setCategories(result)
       } catch {
         setCategories([])
       } finally {
@@ -80,6 +86,8 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
         name: product.name,
         description: product.description,
         categoryId: product.categoryId,
+        subCategoryId: product.subCategoryId ?? '',
+        options: product.options ?? {},
         purchasePrice: String(product.purchasePrice),
         sellingPrice: String(product.sellingPrice),
         stock: String(product.stock),
@@ -89,6 +97,7 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
         barcode: product.barcode,
         image: product.image,
         categoryName: product.categoryName,
+        subCategoryName: product.subCategoryName ?? '',
       })
       setImageFileName(product.image ? (product.image.startsWith('data:application/pdf') ? 'product-document.pdf' : 'product-image') : '')
     }
@@ -97,6 +106,37 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
   function handleChange(field: string, value: string) {
     setFormData(prev => ({ ...prev, [field]: value }))
     setErrors(prev => ({ ...prev, [field]: undefined }))
+  }
+
+  function clearOptionErrors(prev: FormErrors): FormErrors {
+    const next = { ...prev }
+    for (const key of Object.keys(next)) {
+      if (key.startsWith('opt-')) delete next[key]
+    }
+    return next
+  }
+
+  function handleCategoryChange(value: string) {
+    setFormData(prev => ({ ...prev, categoryId: value, subCategoryId: '', options: {} }))
+    setErrors(prev => ({
+      ...clearOptionErrors(prev),
+      categoryId: undefined,
+      subCategoryId: undefined,
+    }))
+  }
+
+  function handleSubCategoryChange(value: string) {
+    setFormData(prev => ({ ...prev, subCategoryId: value, options: {} }))
+    setErrors(prev => {
+      const next = clearOptionErrors(prev)
+      next.subCategoryId = undefined
+      return next
+    })
+  }
+
+  function handleOptionChange(optionId: string, value: string) {
+    setFormData(prev => ({ ...prev, options: { ...prev.options, [optionId]: value } }))
+    setErrors(prev => ({ ...prev, [optionId]: undefined }))
   }
 
   const acceptedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/bmp', 'image/tiff', 'application/pdf']
@@ -127,6 +167,18 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
     if (!formData.name.trim()) newErrors.name = t('products.nameRequired')
     if (!formData.categoryId) newErrors.categoryId = t('common.requiredField')
 
+    const selectedCategory = categories.find(c => c.id === formData.categoryId)
+    if (selectedCategory?.subcategories?.length && !formData.subCategoryId) {
+      newErrors.subCategoryId = t('products.subcategoryRequired')
+    }
+
+    const selectedSubCategory = selectedCategory?.subcategories?.find(s => s.id === formData.subCategoryId)
+    if (selectedSubCategory?.options) {
+      for (const option of selectedSubCategory.options) {
+        if (!formData.options[option.id]) newErrors[option.id] = t('common.requiredField')
+      }
+    }
+
     const pp = parseFloat(formData.purchasePrice)
     if (!formData.purchasePrice || isNaN(pp) || pp <= 0) newErrors.purchasePrice = t('products.pricePositive')
 
@@ -149,13 +201,17 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
     e.preventDefault()
     if (!validate()) return
 
-    const selectedCategory = categories.find(c => c.value === formData.categoryId)
+    const selectedCategory = categories.find(c => c.id === formData.categoryId)
+    const selectedSubCategory = selectedCategory?.subcategories?.find(s => s.id === formData.subCategoryId)
 
     onSave({
       name: formData.name.trim(),
       description: formData.description.trim(),
       categoryId: formData.categoryId,
-      categoryName: selectedCategory?.label ?? formData.categoryName,
+      categoryName: selectedCategory?.name ?? formData.categoryName,
+      subCategoryId: formData.subCategoryId || undefined,
+      subCategoryName: selectedSubCategory?.name ?? formData.subCategoryName,
+      options: formData.options,
       purchasePrice: parseFloat(formData.purchasePrice),
       sellingPrice: parseFloat(formData.sellingPrice),
       stock: parseInt(formData.stock, 10),
@@ -182,14 +238,18 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
           />
         </div>
 
-        <Select
-          label={t('products.category')}
-          value={formData.categoryId}
-          onChange={(e) => handleChange('categoryId', e.target.value)}
-          options={categories}
-          placeholder={categoriesLoading ? t('common.loading') : t('common.allCategories')}
+        <CategorySelector
+          categories={categories}
+          categoryId={formData.categoryId}
+          subCategoryId={formData.subCategoryId}
+          optionValues={formData.options}
           error={errors.categoryId}
-          disabled={loading || categoriesLoading}
+          errors={errors}
+          disabled={loading}
+          loading={categoriesLoading}
+          onCategoryChange={handleCategoryChange}
+          onSubCategoryChange={handleSubCategoryChange}
+          onOptionChange={handleOptionChange}
         />
 
         <Select

@@ -4,6 +4,9 @@ export interface Product {
   description: string;
   categoryId: string;
   categoryName: string;
+  subCategoryId?: string;
+  subCategoryName?: string;
+  options?: Record<string, string>;
   purchasePrice: number;
   sellingPrice: number;
   stock: number;
@@ -16,13 +19,26 @@ export interface Product {
   updatedAt: string;
 }
 
+export interface CategoryOption {
+  id: string;
+  label: string;
+  values: SelectOption[];
+}
+
+export interface SubCategory {
+  id: string;
+  name: string;
+  options?: CategoryOption[];
+}
+
 export interface Category {
   id: string;
   name: string;
   description: string;
   productCount: number;
-  image: string;
+  image?: string;
   createdAt: string;
+  subcategories?: SubCategory[];
 }
 
 export interface Customer {

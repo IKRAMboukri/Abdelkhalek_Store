@@ -1,4 +1,4 @@
-import type { Category, FilterOptions, PaginatedResult } from '@/types';
+import type { Category, SubCategory, FilterOptions, PaginatedResult } from '@/types';
 
 export interface ICategoryService {
   getCategories(options: FilterOptions): Promise<PaginatedResult<Category>>;
@@ -7,4 +7,5 @@ export interface ICategoryService {
   updateCategory(id: string, category: Partial<Category>): Promise<Category | null>;
   deleteCategory(id: string): Promise<boolean>;
   getAllCategories(): Promise<Category[]>;
+  addSubcategory(categoryId: string, name: string): Promise<SubCategory | null>;
 }

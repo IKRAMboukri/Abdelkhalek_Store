@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Modal } from '@/components/ui/Modal'
 import { Input } from '@/components/ui/Input'
+import { Select } from '@/components/ui/Select'
 import { Badge } from '@/components/ui/Badge'
 import { SearchBar } from '@/components/ui/SearchBar'
 import { Pagination } from '@/components/ui/Pagination'
@@ -20,13 +21,15 @@ import { PAGINATION_DEFAULTS } from '@/constants'
 interface CategoryFormData {
   name: string
   description: string
-  image: string
+  type: 'main' | 'sub'
+  parentId: string
 }
 
 const initialFormData: CategoryFormData = {
   name: '',
   description: '',
-  image: '',
+  type: 'main',
+  parentId: '',
 }
 
 export function CategoryList() {
@@ -35,6 +38,7 @@ export function CategoryList() {
 
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState<PaginatedResult<Category> | null>(null)
+  const [allCategories, setAllCategories] = useState<Category[]>([])
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState<number>(PAGINATION_DEFAULTS.pageSize)
@@ -67,9 +71,22 @@ export function CategoryList() {
     }
   }, [search, page, limit, addToast])
 
+  const loadAllCategories = useCallback(async () => {
+    try {
+      const result = await categoryService.getAllCategories()
+      setAllCategories(result)
+    } catch {
+      setAllCategories([])
+    }
+  }, [])
+
   useEffect(() => {
     fetchCategories()
   }, [fetchCategories])
+
+  useEffect(() => {
+    loadAllCategories()
+  }, [loadAllCategories])
 
   useEffect(() => {
     setPage(1)
@@ -86,7 +103,8 @@ export function CategoryList() {
     setFormData({
       name: category.name,
       description: category.description,
-      image: category.image,
+      type: 'main',
+      parentId: '',
     })
     setModalOpen(true)
   }
@@ -96,20 +114,32 @@ export function CategoryList() {
       addToast({ type: 'error', title: t('common.validationError'), message: t('categories.validationName') })
       return
     }
+    if (formData.type === 'sub' && !formData.parentId) {
+      addToast({ type: 'error', title: t('common.validationError'), message: t('categories.parentRequired') })
+      return
+    }
     setSaving(true)
     try {
       if (editingCategory) {
-        await categoryService.updateCategory(editingCategory.id, formData)
+        await categoryService.updateCategory(editingCategory.id, {
+          name: formData.name.trim(),
+          description: formData.description.trim(),
+        })
         addToast({ type: 'success', title: t('common.updated'), message: t('categories.updated') })
-      } else {
+      } else if (formData.type === 'main') {
         await categoryService.createCategory({
-          ...formData,
+          name: formData.name.trim(),
+          description: formData.description.trim(),
           productCount: 0,
         })
         addToast({ type: 'success', title: t('common.created'), message: t('categories.created') })
+      } else {
+        await categoryService.addSubcategory(formData.parentId, formData.name.trim())
+        addToast({ type: 'success', title: t('common.created'), message: t('categories.subcategoryCreated') })
       }
       setModalOpen(false)
       fetchCategories()
+      loadAllCategories()
     } catch {
       addToast({ type: 'error', title: t('common.validationError'), message: t('products.saveError') })
     } finally {
@@ -124,6 +154,7 @@ export function CategoryList() {
       addToast({ type: 'success', title: t('common.deleted'), message: t('categories.deleted') })
       setDeleteConfirm(null)
       fetchCategories()
+      loadAllCategories()
     } catch {
       addToast({ type: 'error', title: t('common.validationError'), message: t('products.deleteError') })
     }
@@ -243,6 +274,21 @@ export function CategoryList() {
                     <p className="text-sm text-text-muted leading-relaxed">
                       {truncate(category.description, 100)}
                     </p>
+                    {category.subcategories && category.subcategories.length > 0 && (
+                      <div className="mt-3">
+                        <p className="text-xs font-medium text-gray-400 mb-1.5">{t('categories.subcategories')}</p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {category.subcategories.map(sub => (
+                            <span
+                              key={sub.id}
+                              className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200"
+                            >
+                              {sub.name}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </Card>
               ))}
@@ -279,6 +325,50 @@ export function CategoryList() {
           }
         >
           <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-text-primary mb-1.5">
+                {t('categories.type')}
+              </label>
+              <div className="grid grid-cols-2 gap-3">
+                {(['main', 'sub'] as const).map((type) => {
+                  const active = formData.type === type
+                  return (
+                    <button
+                      key={type}
+                      type="button"
+                      disabled={!!editingCategory}
+                      onClick={() => setFormData({ ...formData, type })}
+                      className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-medium transition-all duration-150 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 ${
+                        active
+                          ? 'border-primary-500 bg-primary-50 text-primary-700'
+                          : 'border-gray-200 bg-gray-50/50 text-gray-500 hover:border-gray-300 hover:bg-white'
+                      }`}
+                    >
+                      <span
+                        className={`w-4 h-4 rounded-full border flex items-center justify-center shrink-0 ${
+                          active ? 'border-primary-500' : 'border-gray-300'
+                        }`}
+                      >
+                        {active && <span className="w-2 h-2 rounded-full bg-primary-500" />}
+                      </span>
+                      {t(type === 'main' ? 'categories.mainCategory' : 'categories.subcategory')}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {formData.type === 'sub' && (
+              <Select
+                label={t('categories.parentCategory')}
+                value={formData.parentId}
+                onChange={(e) => setFormData({ ...formData, parentId: e.target.value })}
+                options={allCategories.map(c => ({ value: c.id, label: c.name }))}
+                placeholder={allCategories.length ? t('categories.selectParent') : t('categories.noMainCategories')}
+                disabled={!allCategories.length}
+              />
+            )}
+
             <Input
               label={t('common.name')}
               value={formData.name}
@@ -286,24 +376,21 @@ export function CategoryList() {
               placeholder={t('common.name')}
               required
             />
-            <div className="w-full">
-              <label className="block text-sm font-medium text-text-primary mb-1.5">
-                {t('common.description')}
-              </label>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder={t('common.description')}
-                rows={3}
-                className="block w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-text-primary placeholder-text-muted transition-all duration-150 focus:outline-hidden focus:ring-2 focus:ring-primary-500 focus:border-primary-500 hover:border-gray-300 resize-none"
-              />
-            </div>
-            <Input
-              label={t('common.image')}
-              value={formData.image}
-              onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-              placeholder={t('common.image')}
-            />
+
+            {formData.type === 'main' && (
+              <div className="w-full">
+                <label className="block text-sm font-medium text-text-primary mb-1.5">
+                  {t('common.description')}
+                </label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder={t('common.description')}
+                  rows={3}
+                  className="block w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-text-primary placeholder-text-muted transition-all duration-150 focus:outline-hidden focus:ring-2 focus:ring-primary-500 focus:border-primary-500 hover:border-gray-300 resize-none"
+                />
+              </div>
+            )}
           </div>
         </Modal>
 
