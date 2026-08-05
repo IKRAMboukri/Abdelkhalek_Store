@@ -417,24 +417,19 @@ export function NewSale() {
                       { value: 'cash', label: t('common.cash') },
                       { value: 'bank_transfer', label: t('common.bankTransfer') },
                     ].map((pm) => (
-                      <label
+                      <button
                         key={pm.value}
+                        type="button"
+                        aria-pressed={paymentMethod === pm.value}
+                        onClick={() => setPaymentMethod(pm.value as typeof paymentMethod)}
                         className={`flex items-center gap-2 px-4 py-2 rounded-lg border cursor-pointer transition-colors ${
                           paymentMethod === pm.value
                             ? 'border-primary-500 bg-primary-50 text-primary-700'
                             : 'border-border text-text-secondary hover:border-gray-300'
                         }`}
                       >
-                        <input
-                          type="radio"
-                          name="paymentMethod"
-                          value={pm.value}
-                          checked={paymentMethod === pm.value}
-                          onChange={() => setPaymentMethod(pm.value as typeof paymentMethod)}
-                          className="sr-only"
-                        />
                         <span className="text-sm font-medium">{pm.label}</span>
-                      </label>
+                      </button>
                     ))}
                   </div>
                 </div>
