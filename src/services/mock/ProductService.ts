@@ -66,7 +66,7 @@ export class ProductService implements IProductService {
       createdAt: now,
       updatedAt: now
     };
-    this.products.push(newProduct);
+    this.products.unshift(newProduct);
     await new Promise(resolve => setTimeout(resolve, delay()));
     return newProduct;
   }

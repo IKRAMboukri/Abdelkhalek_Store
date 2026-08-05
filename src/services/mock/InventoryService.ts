@@ -61,7 +61,7 @@ export class InventoryService implements IInventoryService {
       id: `inv-${maxId + 1}`,
       createdAt: new Date().toISOString()
     };
-    this.movements.push(newMovement);
+    this.movements.unshift(newMovement);
     await new Promise(resolve => setTimeout(resolve, delay()));
     return newMovement;
   }

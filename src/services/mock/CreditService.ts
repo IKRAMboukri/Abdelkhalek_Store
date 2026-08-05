@@ -60,7 +60,7 @@ export class CreditService implements ICreditService {
       createdAt: now,
       updatedAt: now
     };
-    this.credits.push(newCredit);
+    this.credits.unshift(newCredit);
     await new Promise(resolve => setTimeout(resolve, delay()));
     return newCredit;
   }

@@ -71,7 +71,7 @@ export class SaleService implements ISaleService {
       invoiceNumber: `INV-${new Date().getFullYear()}-${String(maxInv + 1).padStart(4, '0')}`,
       createdAt: now
     };
-    this.sales.push(newSale);
+    this.sales.unshift(newSale);
 
     for (const item of newSale.items) {
       const prod = this.products.find(p => p.id === item.productId);
