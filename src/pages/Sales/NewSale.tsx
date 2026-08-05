@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, Plus, Trash2, Minus, ShoppingCart, User, Printer, Pencil } from 'lucide-react'
 import type { Customer, Product, StoreSettings, SaleItem, Invoice } from '@/types'
-
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
