@@ -123,18 +123,20 @@ export function InvoiceList() {
       </div>
 
       <Card padding={false}>
-        <div className="p-4 pb-0">
-          <div className="flex flex-col sm:flex-row gap-3">
+        <div className="px-4 pt-3 pb-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2.5">
             <SearchBar
               value={search}
               onChange={(val) => { setSearch(val); setPage(1) }}
               placeholder={t('invoices.searchPlaceholder')}
-              className="flex-1"
+              className="w-full sm:w-72"
             />
             <FilterBar
               filters={filterConfig}
               values={{ paymentMethod: paymentFilter, status: statusFilter }}
               onChange={handleFilterChange}
+              compact
+              className="flex-1 sm:justify-end"
             />
           </div>
         </div>
@@ -153,13 +155,16 @@ export function InvoiceList() {
             description={t('invoices.noInvoices')}
           />
         ) : (
-          <Table<Invoice>
-            columns={columns}
-            data={invoices}
-            loading={loading}
-            emptyMessage={t('invoices.noInvoices')}
-            onRowClick={(item) => navigate(`/invoices/${item.id}`)}
-          />
+          <div className="mx-4">
+            <Table<Invoice>
+              columns={columns}
+              data={invoices}
+              loading={loading}
+              emptyMessage={t('invoices.noInvoices')}
+              onRowClick={(item) => navigate(`/invoices/${item.id}`)}
+              dense
+            />
+          </div>
         )}
 
         {!loading && invoices.length > 0 && (

@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, Plus, Trash2, Minus, ShoppingCart, User, Printer } from 'lucide-react'
 import type { Customer, Product, StoreSettings, SaleItem, Invoice } from '@/types'
-
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
@@ -237,6 +236,7 @@ export function NewSale() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card title={t('sales.customerInfo')}>
               <div className="space-y-3">
                 <div className="relative">
@@ -339,6 +339,7 @@ export function NewSale() {
                 </div>
               </div>
             </Card>
+          </div>
 
             <Card title={t('common.cart')} subtitle={`${cartItems.length} ${t('common.itemsCount')}`}>
               {cartItems.length === 0 ? (

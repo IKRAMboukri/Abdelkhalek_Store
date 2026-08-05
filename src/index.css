@@ -38,6 +38,22 @@ body {
   min-height: 100vh;
 }
 
+main {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+main::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* RTL support */
 [dir="rtl"] {
   --font-sans: 'Noto Sans Arabic', 'Inter', system-ui, sans-serif;

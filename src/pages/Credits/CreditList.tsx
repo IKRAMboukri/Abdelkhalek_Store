@@ -9,8 +9,6 @@ import { Table } from '@/components/ui/Table'
 import type { TableColumn } from '@/components/ui/Table'
 import { Pagination } from '@/components/ui/Pagination'
 import { SearchBar } from '@/components/ui/SearchBar'
-import { FilterBar } from '@/components/ui/FilterBar'
-import type { FilterConfig } from '@/components/ui/FilterBar'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
@@ -46,20 +44,6 @@ export function CreditList() {
   const navigate = useNavigate()
   const { addToast } = useToast()
   const { t } = useLocale()
-
-  const statusFilters: FilterConfig[] = [
-    {
-      key: 'status',
-      label: t('common.status'),
-      type: 'select',
-      options: [
-        { value: 'active', label: t('status.active') },
-        { value: 'overdue', label: t('status.overdue') },
-        { value: 'paid', label: t('status.paid') },
-        { value: 'cancelled', label: t('status.cancelled') },
-      ],
-    },
-  ]
 
   const quickFilters = [
     { label: t('credits.all'), value: '' },
@@ -126,13 +110,6 @@ export function CreditList() {
   const handleSearchChange = (value: string) => {
     setSearch(value)
     setPage(1)
-  }
-
-  const handleFilterChange = (key: string, value: string) => {
-    if (key === 'status') {
-      setStatus(value)
-      setPage(1)
-    }
   }
 
   const handleDelete = async () => {
@@ -350,20 +327,13 @@ export function CreditList() {
               ))}
             </div>
 
-            <div className="flex flex-wrap items-center gap-3">
+            <div>
               <SearchBar
                 value={search}
                 onChange={handleSearchChange}
                 placeholder={t('common.searchDot')}
                 className="w-full sm:w-72"
               />
-              <div className="w-full sm:w-44">
-                <FilterBar
-                  filters={statusFilters}
-                  values={{ status }}
-                  onChange={handleFilterChange}
-                />
-              </div>
             </div>
           </div>
         </Card>

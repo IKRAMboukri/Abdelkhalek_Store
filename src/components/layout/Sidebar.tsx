@@ -140,7 +140,7 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
         </div>
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
+      <nav className="flex-1 overflow-y-auto no-scrollbar py-4 px-2 space-y-1">
         {navItems.map(renderNavItem)}
       </nav>
 

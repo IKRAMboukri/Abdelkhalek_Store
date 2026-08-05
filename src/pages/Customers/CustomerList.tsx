@@ -242,8 +242,8 @@ export function CustomerList() {
         </div>
 
         <Card padding={false}>
-          <div className="p-4 pb-0">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <div className="px-4 pt-3 pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2.5">
               <SearchBar
                 value={search}
                 onChange={(val) => {
@@ -286,13 +286,16 @@ export function CustomerList() {
               }
             />
           ) : (
-            <Table<Customer>
-              columns={columns}
-              data={customers}
-              loading={loading}
-              emptyMessage={t('customers.noCustomers')}
-              onRowClick={(item) => navigate(`/customers/${item.id}`)}
-            />
+            <div className="mx-4">
+              <Table<Customer>
+                columns={columns}
+                data={customers}
+                loading={loading}
+                emptyMessage={t('customers.noCustomers')}
+                onRowClick={(item) => navigate(`/customers/${item.id}`)}
+                dense
+              />
+            </div>
           )}
 
           {!loading && customers.length > 0 && (
@@ -338,24 +341,10 @@ export function CustomerList() {
             className="h-10"
           />
           <Input
-            label={t('common.email')}
-            type="email"
-            value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-            required
-            className="h-10 ltr"
-          />
-          <Input
             label={t('common.phone')}
             value={formData.phone}
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
             className="h-10 ltr"
-          />
-          <Input
-            label={t('customers.company')}
-            value={formData.company}
-            onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-            className="h-10"
           />
           <div className="sm:col-span-2">
             <Input
@@ -365,14 +354,23 @@ export function CustomerList() {
               className="h-10"
             />
           </div>
-          <div className="sm:col-span-2">
-            <Input
-              label={t('common.notes')}
-              value={formData.notes}
-              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              className="h-10"
-            />
-          </div>
+          <Input
+            label={t('customers.totalPurchases')}
+            type="number"
+            min={0}
+            value={formData.totalPurchases}
+            onChange={(e) => setFormData({ ...formData, totalPurchases: Number(e.target.value) })}
+            className="h-10 ltr"
+          />
+          <Input
+            label={t('customers.totalSpentLabel')}
+            type="number"
+            min={0}
+            step="0.01"
+            value={formData.totalSpent}
+            onChange={(e) => setFormData({ ...formData, totalSpent: Number(e.target.value) })}
+            className="h-10 ltr"
+          />
           <div className="sm:col-span-2">
             <Select
               label={t('common.status')}
