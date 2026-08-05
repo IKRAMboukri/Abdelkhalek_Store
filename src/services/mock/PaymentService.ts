@@ -62,7 +62,7 @@ export class PaymentService implements IPaymentService {
       id: `pay-${maxId + 1}`,
       createdAt: new Date().toISOString()
     };
-    this.payments.push(newPayment);
+    this.payments.unshift(newPayment);
     await new Promise(resolve => setTimeout(resolve, delay()));
     return newPayment;
   }

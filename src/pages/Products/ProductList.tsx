@@ -36,8 +36,8 @@ export function ProductList() {
     search: '',
     status: '',
     category: '',
-    sortBy: '',
-    sortOrder: 'asc',
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
     page: 1,
     limit: PAGINATION_DEFAULTS.pageSize,
   })

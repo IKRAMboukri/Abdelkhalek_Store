@@ -62,7 +62,7 @@ export class CustomerService implements ICustomerService {
       createdAt: now,
       updatedAt: now
     };
-    this.customers.push(newCustomer);
+    this.customers.unshift(newCustomer);
     await new Promise(resolve => setTimeout(resolve, delay()));
     return newCustomer;
   }

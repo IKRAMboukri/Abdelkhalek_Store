@@ -53,7 +53,7 @@ export class CategoryService implements ICategoryService {
       id: `cat-${maxId + 1}`,
       createdAt: new Date().toISOString()
     };
-    this.categories.push(newCategory);
+    this.categories.unshift(newCategory);
     await new Promise(resolve => setTimeout(resolve, delay()));
     return newCategory;
   }

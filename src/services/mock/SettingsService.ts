@@ -51,7 +51,7 @@ export class SettingsService implements ISettingsService {
       ...user,
       id: `user-${maxId + 1}`
     };
-    this.users.push(newUser);
+    this.users.unshift(newUser);
     await new Promise(resolve => setTimeout(resolve, delay()));
     return newUser;
   }
