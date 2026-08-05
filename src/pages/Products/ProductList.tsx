@@ -182,7 +182,17 @@ export function ProductList() {
         </button>
       ),
     },
-    { key: 'categoryName', label: t('products.category'), sortable: true },
+    {
+      key: 'categoryName', label: t('products.category'), sortable: true,
+      render: (item) => (
+        <div className="flex flex-col">
+          <span className="text-sm text-gray-900">{item.categoryName}</span>
+          {item.subCategoryName && (
+            <span className="text-xs text-gray-400">{item.subCategoryName}</span>
+          )}
+        </div>
+      ),
+    },
     {
       key: 'stock', label: t('common.stock'), sortable: true,
       render: (item) => {

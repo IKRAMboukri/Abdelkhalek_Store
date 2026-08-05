@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Tag, DollarSign, Package, Hash, Barcode, Calendar, Clock, Edit, Trash2, ShoppingCart } from 'lucide-react'
-import type { Product } from '@/types'
+import { ArrowLeft, Tag, DollarSign, Package, Hash, Barcode, Calendar, Clock, Edit, Trash2, ShoppingCart, Layers, ListChecks } from 'lucide-react'
+import type { Product, Category } from '@/types'
 import { Button, Card, EmptyState, StatusBadge, ConfirmDialog } from '@/components/ui'
+import { resolveOptionLabels } from '@/components/products/CategorySelector'
 import { useLocale } from '@/hooks/useLocale'
 import { useToast } from '@/hooks'
-import { productService } from '@/services'
+import { productService, categoryService } from '@/services'
 
 function ProductImage({ src, alt, className = '' }: { src?: string; alt: string; className?: string }) {
   const [imgError, setImgError] = useState(false)
@@ -35,9 +36,16 @@ export function ProductDetail() {
   const { addToast } = useToast()
 
   const [product, setProduct] = useState<Product | null>(null)
+  const [categories, setCategories] = useState<Category[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [deleteTarget, setDeleteTarget] = useState(false)
+
+  useEffect(() => {
+    categoryService.getAllCategories()
+      .then(setCategories)
+      .catch(() => setCategories([]))
+  }, [])
 
   useEffect(() => {
     if (!id) return
@@ -111,9 +119,18 @@ export function ProductDetail() {
 
   const stockInfo = getStockInfo(product.stock, product.minStock)
   const isPdf = product.image?.startsWith('data:application/pdf')
+  const optionLabels = resolveOptionLabels(categories, product.categoryId, product.subCategoryId ?? '', product.options ?? {})
 
   const detailItems = [
     { icon: <Tag size={16} />, label: t('products.category'), value: product.categoryName },
+    ...(product.subCategoryName
+      ? [{ icon: <Layers size={16} />, label: t('products.subcategory'), value: product.subCategoryName }]
+      : []),
+    ...optionLabels.map(({ option, label }) => ({
+      icon: <ListChecks size={16} />,
+      label: option.label,
+      value: label,
+    })),
     { icon: <ShoppingCart size={16} />, label: t('common.unit'), value: t(`units.${product.unit}`) || product.unit },
     { icon: <DollarSign size={16} />, label: t('common.purchasePrice'), value: `DH ${product.purchasePrice.toFixed(2)}` },
     { icon: <DollarSign size={16} />, label: t('common.sellingPrice'), value: `DH ${product.sellingPrice.toFixed(2)}` },

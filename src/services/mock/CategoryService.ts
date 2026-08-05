@@ -1,4 +1,4 @@
-import type { Category, FilterOptions, PaginatedResult } from '@/types';
+import type { Category, SubCategory, FilterOptions, PaginatedResult } from '@/types';
 import type { ICategoryService } from '@/services/interfaces/ICategoryService';
 import { mockCategories } from '@/mocks/categories';
 
@@ -77,5 +77,23 @@ export class CategoryService implements ICategoryService {
   async getAllCategories(): Promise<Category[]> {
     await new Promise(resolve => setTimeout(resolve, delay()));
     return [...this.categories];
+  }
+
+  async addSubcategory(categoryId: string, name: string): Promise<SubCategory | null> {
+    const category = this.categories.find(c => c.id === categoryId);
+    if (!category) return null;
+
+    const newSubcategory: SubCategory = {
+      id: `sub-${Date.now()}`,
+      name,
+    };
+
+    if (!category.subcategories) {
+      category.subcategories = [];
+    }
+    category.subcategories.push(newSubcategory);
+
+    await new Promise(resolve => setTimeout(resolve, delay()));
+    return newSubcategory;
   }
 }
