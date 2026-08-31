@@ -4,7 +4,7 @@ import type { Product, SelectOption, Category } from '@/types'
 import { categoryService } from '@/services'
 import { Button, Input, Select, Textarea } from '@/components/ui'
 import { CategorySelector } from '@/components/products/CategorySelector'
-import { Package, DollarSign, Hash, FileText, Tag, ArrowLeft, AlertTriangle, CheckCircle2, Upload, X } from 'lucide-react'
+import { Package, DollarSign, FileText, Tag, ArrowLeft, AlertTriangle, CheckCircle2, Upload, X } from 'lucide-react'
 
 interface ProductFormProps {
   product?: Product
@@ -20,8 +20,6 @@ interface FormErrors {
   subCategoryId?: string
   purchasePrice?: string
   sellingPrice?: string
-  stock?: string
-  minStock?: string
   unit?: string
   [optionId: string]: string | undefined
 }
@@ -53,8 +51,7 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
     options: {} as Record<string, string>,
     purchasePrice: '',
     sellingPrice: '',
-    stock: '',
-    minStock: '',
+    availability: 'sur_commande',
     unit: 'piece',
     status: 'active' as string,
     barcode: '',
@@ -85,13 +82,12 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
       setFormData({
         name: product.name,
         description: product.description,
-        categoryId: product.categoryId,
+        categoryId: product.categoryId ?? '',
         subCategoryId: product.subCategoryId ?? '',
         options: product.options ?? {},
         purchasePrice: String(product.purchasePrice),
         sellingPrice: String(product.sellingPrice),
-        stock: String(product.stock),
-        minStock: String(product.minStock),
+        availability: product.availability ?? 'sur_commande',
         unit: product.unit,
         status: product.status,
         barcode: product.barcode,
@@ -185,11 +181,7 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
     const sp = parseFloat(formData.sellingPrice)
     if (!formData.sellingPrice || isNaN(sp) || sp <= 0) newErrors.sellingPrice = t('products.pricePositive')
 
-    const stock = parseInt(formData.stock, 10)
-    if (formData.stock === '' || isNaN(stock) || stock < 0) newErrors.stock = t('products.stockPositive')
-
-    const minStock = parseInt(formData.minStock, 10)
-    if (formData.minStock === '' || isNaN(minStock) || minStock < 0) newErrors.minStock = t('products.minStockPositive')
+    if (!formData.availability) newErrors.availability = t('common.requiredField')
 
     if (!formData.unit) newErrors.unit = t('products.unitRequired')
 
@@ -214,8 +206,7 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
       options: formData.options,
       purchasePrice: parseFloat(formData.purchasePrice),
       sellingPrice: parseFloat(formData.sellingPrice),
-      stock: parseInt(formData.stock, 10),
-      minStock: parseInt(formData.minStock, 10),
+      availability: formData.availability as Product['availability'],
       unit: formData.unit,
       status: formData.status as 'active' | 'inactive' | 'discontinued',
       barcode: formData.barcode.trim(),
@@ -287,28 +278,16 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
           icon={<DollarSign size={16} />}
         />
 
-        <Input
-          label={`${t('common.stock')} *`}
-          type="number"
-          min="0"
-          value={formData.stock}
-          onChange={(e) => handleChange('stock', e.target.value)}
-          error={errors.stock}
-          placeholder="0"
+        <Select
+          label={`${t('products.availability')} *`}
+          value={formData.availability}
+          onChange={(e) => handleChange('availability', e.target.value)}
+          options={[
+            { value: 'sur_commande', label: t('products.surCommande') },
+            { value: 'sur_place', label: t('products.surPlace') },
+          ]}
+          error={errors.availability}
           disabled={loading}
-          icon={<Package size={16} />}
-        />
-
-        <Input
-          label={t('common.minStock')}
-          type="number"
-          min="0"
-          value={formData.minStock}
-          onChange={(e) => handleChange('minStock', e.target.value)}
-          error={errors.minStock}
-          placeholder="0"
-          disabled={loading}
-          icon={<Hash size={16} />}
         />
 
         <div className="md:col-span-2">

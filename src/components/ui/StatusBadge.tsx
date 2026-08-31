@@ -8,11 +8,9 @@ const statusToVariant: Record<string, BadgeVariant> = {
   active: 'success',
   completed: 'success',
   paid: 'success',
-  in: 'info',
   new_sale: 'success',
   pending: 'warning',
   overdue: 'warning',
-  low_stock: 'warning',
   credit_reminder: 'warning',
   inactive: 'neutral',
   viewer: 'neutral',
@@ -21,12 +19,10 @@ const statusToVariant: Record<string, BadgeVariant> = {
   failed: 'danger',
   blocked: 'danger',
   discontinued: 'danger',
-  out: 'danger',
   system: 'info',
   admin: 'info',
   manager: 'info',
   sales: 'success',
-  adjustment: 'info',
 }
 
 interface StatusBadgeProps {

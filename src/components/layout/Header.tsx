@@ -10,25 +10,21 @@ import {
 } from 'lucide-react'
 import { Breadcrumb } from './Breadcrumb'
 import { useLocale } from '@/hooks/useLocale'
+import { useAuth } from '@/context/AuthContext'
 import clsx from 'clsx'
 
 interface HeaderProps {
   onMenuClick: () => void
   unreadNotifications?: number
-  userName?: string
-  userAvatar?: string
-  userRole?: string
 }
 
 export function Header({
   onMenuClick,
   unreadNotifications = 0,
-  userName = 'John Doe',
-  userAvatar,
-  userRole = 'admin',
 }: HeaderProps) {
   const navigate = useNavigate()
   const { t, locale, setLocale } = useLocale()
+  const { user, logout } = useAuth()
   const [showUserMenu, setShowUserMenu] = useState(false)
   const [showLangMenu, setShowLangMenu] = useState(false)
 
@@ -146,15 +142,15 @@ export function Header({
               className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-lg hover:bg-surface-secondary transition-colors cursor-pointer"
             >
               <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center text-primary-700 dark:text-primary-300 font-semibold text-sm shrink-0 overflow-hidden">
-                {userAvatar ? (
-                  <img src={userAvatar} alt="" className="w-full h-full object-cover" />
+                {user?.avatar ? (
+                  <img src={user.avatar} alt="" className="w-full h-full object-cover" />
                 ) : (
-                  userName.charAt(0).toUpperCase()
+                  (user?.name ?? 'A').charAt(0).toUpperCase()
                 )}
               </div>
               <div className="hidden md:block text-left">
-                <p className="text-sm font-medium text-text-primary leading-tight">{userName}</p>
-                <p className="text-xs text-text-muted capitalize">{userRole}</p>
+                <p className="text-sm font-medium text-text-primary leading-tight">{user?.name}</p>
+                <p className="text-xs text-text-muted capitalize">{user?.role}</p>
               </div>
             </button>
 
@@ -165,8 +161,8 @@ export function Header({
               )}>
                 <div className="p-2">
                   <div className="px-3 py-2 border-b border-border mb-1">
-                    <p className="text-sm font-medium text-text-primary">{userName}</p>
-                    <p className="text-xs text-text-muted capitalize">{userRole}</p>
+                    <p className="text-sm font-medium text-text-primary">{user?.name}</p>
+                    <p className="text-xs text-text-muted truncate">{user?.email}</p>
                   </div>
                   <button
                     type="button"
@@ -179,11 +175,11 @@ export function Header({
                   <div className="border-t border-border mt-1 pt-1">
                     <button
                       type="button"
-                      onClick={() => { setShowUserMenu(false) }}
+                      onClick={() => { setShowUserMenu(false); void logout() }}
                       className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                     >
                       <LogOut size={16} />
-                      {t('common.close')}
+                      {t('auth.logout')}
                     </button>
                   </div>
                 </div>

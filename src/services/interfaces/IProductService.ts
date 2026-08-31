@@ -6,7 +6,6 @@ export interface IProductService {
   createProduct(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<Product>;
   updateProduct(id: string, product: Partial<Product>): Promise<Product | null>;
   deleteProduct(id: string): Promise<boolean>;
-  getLowStockProducts(): Promise<Product[]>;
   getProductsByCategory(categoryId: string): Promise<Product[]>;
   getAllProducts(): Promise<Product[]>;
 }

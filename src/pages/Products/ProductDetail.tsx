@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Tag, DollarSign, Package, Hash, Barcode, Calendar, Clock, Edit, Trash2, ShoppingCart, Layers, ListChecks } from 'lucide-react'
+import { ArrowLeft, Tag, DollarSign, Package, Barcode, Calendar, Clock, Edit, Trash2, ShoppingCart, Layers, ListChecks } from 'lucide-react'
 import type { Product, Category } from '@/types'
 import { Button, Card, EmptyState, StatusBadge, ConfirmDialog } from '@/components/ui'
 import { resolveOptionLabels } from '@/components/products/CategorySelector'
@@ -74,10 +74,9 @@ export function ProductDetail() {
     }
   }
 
-  function getStockInfo(stock: number, minStock: number) {
-    if (stock === 0) return { label: t('common.outOfStock'), color: 'text-red-600', bg: 'bg-red-50 border-red-200' }
-    if (stock <= minStock) return { label: `${stock} - ${t('common.low')}`, color: 'text-amber-600', bg: 'bg-amber-50 border-amber-200' }
-    return { label: `${stock} - ${t('common.inStock')}`, color: 'text-emerald-600', bg: 'bg-emerald-50 border-emerald-200' }
+  function getAvailabilityInfo(availability: Product['availability']) {
+    if (availability === 'sur_place') return { label: t('products.surPlace'), color: 'text-emerald-600', bg: 'bg-emerald-50 border-emerald-200' }
+    return { label: t('products.surCommande'), color: 'text-blue-600', bg: 'bg-blue-50 border-blue-200' }
   }
 
   if (loading) {
@@ -117,12 +116,12 @@ export function ProductDetail() {
     )
   }
 
-  const stockInfo = getStockInfo(product.stock, product.minStock)
+  const availabilityInfo = getAvailabilityInfo(product.availability)
   const isPdf = product.image?.startsWith('data:application/pdf')
-  const optionLabels = resolveOptionLabels(categories, product.categoryId, product.subCategoryId ?? '', product.options ?? {})
+  const optionLabels = resolveOptionLabels(categories, product.categoryId ?? '', product.subCategoryId ?? '', product.options ?? {})
 
   const detailItems = [
-    { icon: <Tag size={16} />, label: t('products.category'), value: product.categoryName },
+    { icon: <Tag size={16} />, label: t('products.category'), value: product.categoryName || t('products.noCategory') },
     ...(product.subCategoryName
       ? [{ icon: <Layers size={16} />, label: t('products.subcategory'), value: product.subCategoryName }]
       : []),
@@ -134,8 +133,7 @@ export function ProductDetail() {
     { icon: <ShoppingCart size={16} />, label: t('common.unit'), value: t(`units.${product.unit}`) || product.unit },
     { icon: <DollarSign size={16} />, label: t('common.purchasePrice'), value: `DH ${product.purchasePrice.toFixed(2)}` },
     { icon: <DollarSign size={16} />, label: t('common.sellingPrice'), value: `DH ${product.sellingPrice.toFixed(2)}` },
-    { icon: <Package size={16} />, label: t('common.stock'), value: `${product.stock}` },
-    { icon: <Hash size={16} />, label: t('common.minStock'), value: `${product.minStock}` },
+    { icon: <Package size={16} />, label: t('products.availability'), value: product.availability === 'sur_place' ? t('products.surPlace') : t('products.surCommande') },
     { icon: <Barcode size={16} />, label: t('common.barcode'), value: product.barcode || '-' },
     { icon: <Calendar size={16} />, label: t('common.created'), value: new Date(product.createdAt).toLocaleDateString() },
     { icon: <Clock size={16} />, label: t('common.updated'), value: new Date(product.updatedAt).toLocaleDateString() },
@@ -187,9 +185,9 @@ export function ProductDetail() {
                 <span className="text-lg font-semibold text-text-primary">DH {product.purchasePrice.toFixed(2)}</span>
               </div>
               <div className="flex items-center justify-between p-3 rounded-xl border border-gray-200">
-                <span className="text-sm text-text-muted">{t('common.stock')}</span>
-                <span className={`text-sm font-semibold px-3 py-1 rounded-full border ${stockInfo.bg} ${stockInfo.color}`}>
-                  {stockInfo.label}
+                <span className="text-sm text-text-muted">{t('products.availability')}</span>
+                <span className={`text-sm font-semibold px-3 py-1 rounded-full border ${availabilityInfo.bg} ${availabilityInfo.color}`}>
+                  {availabilityInfo.label}
                 </span>
               </div>
             </div>

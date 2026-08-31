@@ -393,14 +393,10 @@ export function CreditManage() {
         {c.address && (
           <p className="mt-3 text-sm text-text-muted">{c.address}</p>
         )}
-        <div className="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-border">
+        <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-border">
           <div>
             <p className="text-xs text-text-muted">{t('customers.totalPurchases')}</p>
             <p className="text-lg font-bold text-text-primary">{c.totalPurchases}</p>
-          </div>
-          <div>
-            <p className="text-xs text-text-muted">{t('customers.totalSpentLabel')}</p>
-            <p className="text-lg font-bold text-text-primary">DH {c.totalSpent.toLocaleString()}</p>
           </div>
           <div>
             <p className="text-xs text-text-muted">{t('credits.totalOutstanding')}</p>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Mail, Phone, MapPin, Building, ShoppingBag, DollarSign } from 'lucide-react'
+import { ArrowLeft, Mail, Phone, MapPin, Building, ShoppingBag } from 'lucide-react'
 import type { Customer, Sale, Credit } from '@/types'
 
 import { Button } from '@/components/ui/Button'
@@ -205,20 +205,13 @@ export function CustomerDetail() {
                 )}
               </div>
 
-              <div className="grid grid-cols-2 gap-4 mt-6 pt-4 border-t border-border">
+              <div className="grid grid-cols-1 gap-4 mt-6 pt-4 border-t border-border">
                 <div className="text-center">
                   <div className="flex items-center justify-center gap-1 text-sm text-text-muted mb-1">
                     <ShoppingBag size={14} />
                     <span>{t('customers.purchases')}</span>
                   </div>
                   <p className="text-xl font-bold text-text-primary">{customer.totalPurchases}</p>
-                </div>
-                <div className="text-center">
-                  <div className="flex items-center justify-center gap-1 text-sm text-text-muted mb-1">
-                    <DollarSign size={14} />
-                    <span>{t('customers.totalSpentLabel')}</span>
-                  </div>
-                  <p className="text-xl font-bold text-text-primary">DH {customer.totalSpent.toFixed(2)}</p>
                 </div>
               </div>
             </Card>

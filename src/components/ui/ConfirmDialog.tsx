@@ -71,8 +71,7 @@ export function ConfirmDialog({
           <Button
             variant={config.buttonVariant}
             onClick={() => {
-              onConfirm()
-              onClose()
+              Promise.resolve(onConfirm()).then(() => onClose())
             }}
             className="flex-1"
           >

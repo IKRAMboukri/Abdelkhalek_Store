@@ -25,7 +25,6 @@ export function ProductList() {
   const sortOptions = [
     { value: 'name', label: t('sortOptions.name') },
     { value: 'sellingPrice', label: t('sortOptions.sellingPrice') },
-    { value: 'stock', label: t('sortOptions.stock') },
     { value: 'createdAt', label: t('sortOptions.createdAt') },
     { value: 'updatedAt', label: t('sortOptions.updatedAt') },
     { value: 'categoryName', label: t('sortOptions.categoryName') },
@@ -137,10 +136,9 @@ export function ProductList() {
     }
   }
 
-  function getStockBadge(stock: number, minStock: number) {
-    if (stock === 0) return { label: t('common.outOfStock'), color: 'text-red-600 font-semibold' }
-    if (stock <= minStock) return { label: `${stock} (${t('common.low')})`, color: 'text-yellow-600 font-semibold' }
-    return { label: String(stock), color: 'text-green-600 font-semibold' }
+  function getAvailabilityBadge(availability: Product['availability']) {
+    if (availability === 'sur_place') return { label: t('products.surPlace'), color: 'text-green-600 font-semibold' }
+    return { label: t('products.surCommande'), color: 'text-blue-600 font-semibold' }
   }
 
   const filterConfigs: FilterConfig[] = [
@@ -186,7 +184,7 @@ export function ProductList() {
       key: 'categoryName', label: t('products.category'), sortable: true,
       render: (item) => (
         <div className="flex flex-col">
-          <span className="text-sm text-gray-900">{item.categoryName}</span>
+          <span className="text-sm text-gray-900">{item.categoryName || t('products.noCategory')}</span>
           {item.subCategoryName && (
             <span className="text-xs text-gray-400">{item.subCategoryName}</span>
           )}
@@ -194,9 +192,9 @@ export function ProductList() {
       ),
     },
     {
-      key: 'stock', label: t('common.stock'), sortable: true,
+      key: 'availability', label: t('products.availability'),
       render: (item) => {
-        const badge = getStockBadge(item.stock, item.minStock)
+        const badge = getAvailabilityBadge(item.availability)
         return <span className={badge.color}>{badge.label}</span>
       },
     },

@@ -54,8 +54,8 @@ export function Dashboard() {
   const kpiCards = stats ? [
     { title: t('dashboard.totalProducts'), value: stats.totalProducts, icon: <Package size={20} /> },
     { title: t('dashboard.totalCustomers'), value: stats.totalCustomers, icon: <Users size={20} /> },
-    { title: t('dashboard.lowStockProducts'), value: stats.lowStockProducts, icon: <AlertTriangle size={20} /> },
     { title: t('dashboard.totalSales'), value: stats.totalSales, icon: <ShoppingCart size={20} /> },
+    { title: t('dashboard.pendingCredits'), value: stats.pendingCredits, icon: <AlertTriangle size={20} /> },
     { title: t('dashboard.totalRevenue'), value: `DH ${stats.totalRevenue.toLocaleString()}`, icon: <DollarSign size={20} /> },
     { title: t('dashboard.totalProfit'), value: `DH ${stats.totalProfit.toLocaleString()}`, icon: <TrendingUp size={20} /> },
   ] : []

@@ -9,12 +9,39 @@ import { Modal } from '@/components/ui/Modal'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { saleService, productService, customerService, settingsService } from '@/services'
 import { InvoiceDocument } from '@/components/invoice'
+import { CustomerFormModal } from '@/components/customers/CustomerFormModal'
 import { useToast } from '@/hooks/useToast'
 import { useLocale } from '@/hooks/useLocale'
 
 
 interface CartItem extends SaleItem {
   productId: string
+}
+
+// Runtime marker: lets you verify in DevTools that the browser is executing
+// this exact build of the page.
+console.info('[NewSale] runtime v3 — derived totals active')
+
+// Single source of truth for money math: every amount shown or sent is
+// derived from unitPrice x quantity at read time, so it can never go stale.
+function toMoney(value: unknown): number {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : 0
+  if (typeof value === 'string') {
+    const parsed = Number(value.replace(/[\s'’]/g, '').replace(',', '.'))
+    return Number.isFinite(parsed) ? parsed : 0
+  }
+  return 0
+}
+
+function lineTotal(item: Pick<CartItem, 'unitPrice' | 'quantity'>): number {
+  const unitPrice = toMoney(item.unitPrice)
+  const quantity = Number(item.quantity)
+  if (!Number.isFinite(quantity)) return 0
+  return Math.round(unitPrice * quantity * 100) / 100
+}
+
+function sumSubtotal(items: Array<Pick<CartItem, 'unitPrice' | 'quantity'>>): number {
+  return Math.round(items.reduce((sum, item) => sum + lineTotal(item), 0) * 100) / 100
 }
 
 export function NewSale() {
@@ -36,6 +63,8 @@ export function NewSale() {
 
   const [productSearchTerm, setProductSearchTerm] = useState('')
   const [customerSearchTerm, setCustomerSearchTerm] = useState('')
+
+  const [addClientOpen, setAddClientOpen] = useState(false)
 
   const [showInvoiceModal, setShowInvoiceModal] = useState(false)
   const [completedInvoice, setCompletedInvoice] = useState<Invoice | null>(null)
@@ -84,41 +113,45 @@ export function NewSale() {
     [customers, selectedCustomerId],
   )
 
+  const handleClientCreated = (customer: Customer) => {
+    setCustomers((prev) => [customer, ...prev])
+    setSelectedCustomerId(customer.id)
+    setCustomerSearchTerm('')
+  }
+
   const addProductToCart = (product: Product) => {
     setCartItems((prev) => {
       const existing = prev.find((item) => item.productId === product.id)
       if (existing) {
-        return prev.map((item) =>
-          item.productId === product.id
-            ? {
-                ...item,
-                quantity: item.quantity + 1,
-                total: (item.quantity + 1) * item.unitPrice,
-              }
-            : item,
-        )
+        return prev.map((item) => {
+          if (item.productId !== product.id) return item
+          const quantity = item.quantity + 1
+          return { ...item, quantity, total: lineTotal({ ...item, quantity }) }
+        })
       }
-      return [
+      const unitPrice = toMoney(product.sellingPrice)
+      const next = [
         ...prev,
         {
           productId: product.id,
           productName: product.name,
           quantity: 1,
-          unitPrice: product.sellingPrice,
-          total: product.sellingPrice,
+          unitPrice,
+          total: lineTotal({ unitPrice, quantity: 1 }),
         },
       ]
+      return next
     })
   }
 
   const updateQuantity = (productId: string, quantity: number) => {
-    if (quantity < 1) return
+    if (!Number.isFinite(quantity) || quantity < 1) return
     setCartItems((prev) =>
-      prev.map((item) =>
-        item.productId === productId
-          ? { ...item, quantity, total: quantity * item.unitPrice }
-          : item,
-      ),
+      prev.map((item) => {
+        if (item.productId !== productId) return item
+        const next = { ...item, quantity }
+        return { ...next, total: lineTotal(next) }
+      }),
     )
   }
 
@@ -126,27 +159,31 @@ export function NewSale() {
     setCartItems((prev) => prev.filter((item) => item.productId !== productId))
   }
 
-  const subtotal = useMemo(
-    () => cartItems.reduce((sum, item) => sum + item.total, 0),
-    [cartItems],
-  )
+  const subtotal = useMemo(() => sumSubtotal(cartItems), [cartItems])
 
   const total = useMemo(() => {
-    const afterDiscount = subtotal - discount
-    if (afterDiscount <= 0) return 0
-    return Math.round(afterDiscount * 100) / 100
+    const afterDiscount = Math.round((subtotal - toMoney(discount)) * 100) / 100
+    return afterDiscount > 0 ? afterDiscount : 0
   }, [subtotal, discount])
 
   const currencySymbol = settings?.currencySymbol ?? 'DH'
 
-  const validate = (): string | null => {
+  const validate = (totalValue: number): string | null => {
     if (!selectedCustomerId) return t('sales.customerRequired')
     if (cartItems.length === 0) return t('sales.itemsRequired')
+    if (!(totalValue > 0)) return t('sales.totalMustBePositive')
     return null
   }
 
   const handleCompleteSale = async () => {
-    const validationError = validate()
+    // Recompute everything from the cart at call time — no stale totals.
+    const itemsWithTotals = cartItems.map((item) => ({ ...item, total: lineTotal(item) }))
+    const freshSubtotal = sumSubtotal(cartItems)
+    const freshDiscount = toMoney(discount)
+    const afterDiscount = Math.round((freshSubtotal - freshDiscount) * 100) / 100
+    const freshTotal = afterDiscount > 0 ? afterDiscount : 0
+
+    const validationError = validate(freshTotal)
     if (validationError) {
       showToast('error', validationError)
       return
@@ -157,10 +194,10 @@ export function NewSale() {
       const saleData = {
         customerId: selectedCustomerId,
         customerName: selectedCustomer?.name ?? '',
-        items: cartItems,
-        subtotal,
-        discount,
-        total,
+        items: itemsWithTotals,
+        subtotal: freshSubtotal,
+        discount: freshDiscount,
+        total: freshTotal,
         invoiceNumber: 'INV-TEMP-' + Date.now(),
         paymentMethod,
         notes,
@@ -201,8 +238,10 @@ export function NewSale() {
       }
       setCompletedInvoice(invoice)
       setShowInvoiceModal(true)
-    } catch {
-      showToast('error', t('sales.saleError'))
+    } catch (err) {
+      const message =
+        err instanceof Error && err.message ? err.message : t('sales.saleError')
+      showToast('error', message)
     } finally {
       setSubmitting(false)
     }
@@ -239,18 +278,23 @@ export function NewSale() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card title={t('sales.customerInfo')}>
               <div className="space-y-3">
-                <div className="relative">
-                  <Search
-                    size={16}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
-                  />
-                  <input
-                    type="text"
-                    value={customerSearchTerm}
-                    onChange={(e) => setCustomerSearchTerm(e.target.value)}
-                    placeholder={t('sales.customerSearchPlaceholder')}
-                    className="block w-full rounded-lg border border-border bg-white pl-9 pr-3 py-2 text-sm text-text-primary placeholder-text-muted focus:outline-hidden focus:ring-2 focus:ring-primary-500"
-                  />
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Search
+                      size={16}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
+                    />
+                    <input
+                      type="text"
+                      value={customerSearchTerm}
+                      onChange={(e) => setCustomerSearchTerm(e.target.value)}
+                      placeholder={t('sales.customerSearchPlaceholder')}
+                      className="block w-full rounded-lg border border-border bg-white pl-9 pr-3 py-2 text-sm text-text-primary placeholder-text-muted focus:outline-hidden focus:ring-2 focus:ring-primary-500"
+                    />
+                  </div>
+                  <Button icon={<Plus size={16} />} onClick={() => setAddClientOpen(true)}>
+                    {t('sales.addClient')}
+                  </Button>
                 </div>
                 <div className="max-h-48 overflow-y-auto border border-border rounded-lg">
                   {loading ? (
@@ -323,7 +367,10 @@ export function NewSale() {
                           </p>
                           <p className="text-xs text-text-muted">
                             {currencySymbol}
-                            {p.sellingPrice.toFixed(2)} | {t('common.stock')}: {p.stock}
+                            {p.sellingPrice.toFixed(2)} |{' '}
+                            {p.availability === 'sur_place'
+                              ? t('products.surPlace')
+                              : t('products.surCommande')}
                           </p>
                         </div>
                         <Button
@@ -331,7 +378,6 @@ export function NewSale() {
                           size="sm"
                           icon={<Plus size={14} />}
                           onClick={() => addProductToCart(p)}
-                          disabled={p.stock <= 0}
                         />
                       </div>
                     ))
@@ -390,7 +436,7 @@ export function NewSale() {
                           </td>
                           <td className="py-2 text-right text-text-primary font-medium">
                             {currencySymbol}
-                            {item.total.toFixed(2)}
+                            {lineTotal(item).toFixed(2)}
                           </td>
                           <td className="py-2 text-right">
                             <button
@@ -566,6 +612,12 @@ export function NewSale() {
       >
         {completedInvoice && <InvoiceDocument invoice={completedInvoice} />}
       </Modal>
+
+      <CustomerFormModal
+        open={addClientOpen}
+        onClose={() => setAddClientOpen(false)}
+        onSaved={handleClientCreated}
+      />
     </>
   )
 }

@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react'
-import { Save, Plus, Trash2, Pencil, UserCheck, UserX } from 'lucide-react'
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { Save, Plus, Trash2, Pencil, UserCheck, UserX, Upload, ImageIcon, X } from 'lucide-react'
 import type { StoreSettings, UserSettings } from '@/types'
 
 import { Button } from '@/components/ui/Button'
@@ -16,7 +16,7 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { settingsService } from '@/services'
 import { useToast } from '@/hooks/useToast'
 import { useLocale } from '@/hooks/useLocale'
-import { CURRENCY_OPTIONS, DATE_FORMAT_OPTIONS } from '@/constants'
+import { CURRENCY_OPTIONS, DATE_FORMAT_OPTIONS, API_BASE_URL } from '@/constants'
 import clsx from 'clsx'
 
 const LANG_OPTIONS = [
@@ -51,16 +51,16 @@ const ROLE_OPTIONS = [
 ]
 
 const initialStoreForm: StoreSettings = {
-  storeName: '',
-  storeEmail: '',
-  storePhone: '',
-  storeAddress: '',
+  storeName: 'Abdelkhalek_Store',
+  storeEmail: 'abdelkhalekboukri668@gmail.com',
+  storePhone: '0723312525',
+  storeAddress: 'Casablanca, Sidi Maarouf, Hay Sacem',
   currency: 'MAD',
   currencySymbol: 'DH',
   logo: '',
   fiscalYear: String(new Date().getFullYear()),
-  timezone: 'America/New_York',
-  dateFormat: 'MM/DD/YYYY',
+  timezone: 'Africa/Casablanca',
+  dateFormat: 'DD/MM/YYYY',
 }
 
 interface UserFormData {
@@ -99,6 +99,50 @@ export function Settings() {
   const [dateFormat, setDateFormat] = useState('MM/DD/YYYY')
   const [timezone, setTimezone] = useState('America/New_York')
   const [itemsPerPage, setItemsPerPage] = useState('10')
+  const [uploadingLogo, setUploadingLogo] = useState(false)
+  const logoInputRef = useRef<HTMLInputElement>(null)
+
+  const ALLOWED_LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/svg+xml']
+  const MAX_LOGO_SIZE = 5 * 1024 * 1024
+
+  const resolveLogoUrl = (logo: string) =>
+    !logo ? '' : /^https?:\/\//.test(logo) ? logo : `${API_BASE_URL}${logo}`
+
+  const handleLogoSelect = async (file: File | undefined) => {
+    if (!file) return
+    if (!ALLOWED_LOGO_TYPES.includes(file.type)) {
+      showToast('error', t('settings.invalidImageType'))
+      return
+    }
+    if (file.size > MAX_LOGO_SIZE) {
+      showToast('error', t('settings.imageTooLarge'))
+      return
+    }
+    setUploadingLogo(true)
+    try {
+      const updated = await settingsService.uploadLogo(file)
+      setStoreSettings(updated)
+      showToast('success', t('settings.logoUploaded'))
+    } catch {
+      showToast('error', t('settings.logoUploadFailed'))
+    } finally {
+      setUploadingLogo(false)
+      if (logoInputRef.current) logoInputRef.current.value = ''
+    }
+  }
+
+  const handleLogoRemove = async () => {
+    setUploadingLogo(true)
+    try {
+      const updated = await settingsService.updateStoreSettings({ logo: '' })
+      setStoreSettings(updated)
+      showToast('success', t('settings.logoRemoved'))
+    } catch {
+      showToast('error', t('settings.failedToSaveSettings'))
+    } finally {
+      setUploadingLogo(false)
+    }
+  }
 
   const loadSettings = useCallback(async () => {
     setLoading(true)
@@ -245,7 +289,6 @@ export function Settings() {
     { key: 'storeEmail', label: t('settings.storeEmailLabel'), type: 'email' },
     { key: 'storePhone', label: t('settings.storePhoneLabel') },
     { key: 'storeAddress', label: t('settings.storeAddressLabel') },
-    { key: 'logo', label: t('settings.logoLabel') },
   ]
 
   const userColumns: TableColumn<UserSettings>[] = [
@@ -307,7 +350,67 @@ export function Settings() {
                   ))}
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-6">
+                  <input
+                    ref={logoInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+                    className="hidden"
+                    onChange={(e) => void handleLogoSelect(e.target.files?.[0])}
+                  />
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      {t('settings.logoLabel')}
+                    </label>
+                    <div className="flex items-center gap-4">
+                      <div
+                        className={clsx(
+                          'w-20 h-20 shrink-0 rounded-xl border border-border bg-surface-secondary overflow-hidden flex items-center justify-center',
+                          !storeSettings.logo && 'text-gray-300',
+                        )}
+                      >
+                        {storeSettings.logo ? (
+                          <img
+                            src={resolveLogoUrl(storeSettings.logo)}
+                            alt={t('settings.logoLabel')}
+                            className="w-full h-full object-contain"
+                            onError={(e) => {
+                              ;(e.target as HTMLImageElement).style.display = 'none'
+                            }}
+                          />
+                        ) : (
+                          <ImageIcon size={28} />
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            icon={<Upload size={16} />}
+                            loading={uploadingLogo}
+                            onClick={() => logoInputRef.current?.click()}
+                          >
+                            {t('settings.uploadLogo')}
+                          </Button>
+                          {storeSettings.logo && (
+                            <button
+                              type="button"
+                              disabled={uploadingLogo}
+                              onClick={() => void handleLogoRemove()}
+                              className="p-2 rounded-lg text-text-muted hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer disabled:opacity-50"
+                              aria-label={t('settings.removeLogo')}
+                            >
+                              <X size={16} />
+                            </button>
+                          )}
+                        </div>
+                        <p className="mt-2 text-xs text-text-muted">{t('settings.logoHelp')}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {storeFields.map(({ key, label, type }) => (
                     <Input
                       key={key}
@@ -332,6 +435,7 @@ export function Settings() {
                       }))
                     }}
                   />
+                  </div>
                 </div>
               )}
             </Card>

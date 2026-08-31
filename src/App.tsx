@@ -1,7 +1,10 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { ToastProvider } from '@/components/ui/Toast'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
+import { AuthProvider } from '@/context/AuthContext'
+import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import Layout from '@/components/layout/Layout'
+import LoginPage from '@/pages/Auth/LoginPage'
 import { Dashboard } from '@/pages/Dashboard'
 import { ProductList } from '@/pages/Products/ProductList'
 import { AddProduct } from '@/pages/Products/AddProduct'
@@ -23,7 +26,14 @@ function AppRoutes() {
   return (
     <ErrorBoundary key={location.pathname}>
       <Routes>
-        <Route element={<Layout />}>
+        <Route path="/login" element={<LoginPage />} />
+        <Route
+          element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="/" element={<Dashboard />} />
           <Route path="/products" element={<ProductList />} />
           <Route path="/products/new" element={<AddProduct />} />
@@ -49,9 +59,11 @@ function AppRoutes() {
 export default function App() {
   return (
     <BrowserRouter>
-      <ToastProvider>
-        <AppRoutes />
-      </ToastProvider>
+      <AuthProvider>
+        <ToastProvider>
+          <AppRoutes />
+        </ToastProvider>
+      </AuthProvider>
     </BrowserRouter>
   )
 }

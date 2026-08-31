@@ -7,7 +7,6 @@ const pathLabelMap: Record<string, string> = {
   dashboard: 'nav.dashboard',
   products: 'nav.products',
   categories: 'nav.categories',
-  inventory: 'nav.inventory',
   customers: 'nav.customers',
   sales: 'nav.sales',
   invoices: 'nav.invoices',
@@ -17,8 +16,6 @@ const pathLabelMap: Record<string, string> = {
   notifications: 'nav.notifications',
   settings: 'nav.settings',
   new: 'common.create',
-  movements: 'nav.movements',
-  'low-stock': 'nav.lowStock',
 }
 
 interface BreadcrumbProps {

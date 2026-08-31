@@ -32,6 +32,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           <input
             ref={ref}
             id={inputId}
+            translate="no"
             className={clsx(
               'block w-full rounded-xl border bg-gray-50/50 px-4 py-2.5 text-sm text-gray-900 placeholder-gray-300 transition-all duration-200',
               'focus:outline-hidden focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 focus:bg-white',

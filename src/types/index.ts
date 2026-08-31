@@ -1,16 +1,17 @@
+export type ProductAvailability = 'sur_commande' | 'sur_place';
+
 export interface Product {
   id: string;
   name: string;
   description: string;
-  categoryId: string;
+  categoryId: string | null;
   categoryName: string;
   subCategoryId?: string;
   subCategoryName?: string;
   options?: Record<string, string>;
   purchasePrice: number;
   sellingPrice: number;
-  stock: number;
-  minStock: number;
+  availability: ProductAvailability;
   unit: string;
   image: string;
   status: 'active' | 'inactive' | 'discontinued';
@@ -50,7 +51,6 @@ export interface Customer {
   company: string;
   notes: string;
   totalPurchases: number;
-  totalSpent: number;
   creditBalance: number;
   status: 'active' | 'inactive' | 'blocked';
   createdAt: string;
@@ -105,19 +105,6 @@ export interface CreditPayment {
   notes: string;
 }
 
-export interface InventoryMovement {
-  id: string;
-  productId: string;
-  productName: string;
-  type: 'in' | 'out' | 'adjustment';
-  quantity: number;
-  previousStock: number;
-  newStock: number;
-  reference: string;
-  notes: string;
-  createdAt: string;
-}
-
 export interface Payment {
   id: string;
   saleId: string;
@@ -134,7 +121,7 @@ export interface Payment {
 
 export interface Notification {
   id: string;
-  type: 'low_stock' | 'credit_reminder' | 'new_sale' | 'system';
+  type: 'credit_reminder' | 'new_sale' | 'system';
   title: string;
   message: string;
   read: boolean;
@@ -151,7 +138,6 @@ export interface DashboardStats {
   totalRevenue: number;
   totalProfit: number;
   totalOrders: number;
-  lowStockProducts: number;
   pendingCredits: number;
   overdueCredits: number;
   pendingCreditAmount: number;
@@ -186,7 +172,6 @@ export interface RecentCustomer {
   id: string;
   name: string;
   email: string;
-  totalSpent: number;
   createdAt: string;
 }
 

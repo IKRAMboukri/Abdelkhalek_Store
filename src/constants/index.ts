@@ -27,16 +27,6 @@ export const NAV_ITEMS: Array<{
     subItems: [],
   },
   {
-    icon: 'Warehouse',
-    label: 'Inventory',
-    path: '/inventory',
-    subItems: [
-      { label: 'Stock Overview', path: '/inventory' },
-      { label: 'Movements', path: '/inventory/movements' },
-      { label: 'Low Stock', path: '/inventory/low-stock' },
-    ],
-  },
-  {
     icon: 'Users',
     label: 'Customers',
     path: '/customers',
@@ -79,7 +69,6 @@ export const NAV_ITEMS: Array<{
     path: '/reports',
     subItems: [
       { label: 'Sales Report', path: '/reports/sales' },
-      { label: 'Inventory Report', path: '/reports/inventory' },
       { label: 'Financial Report', path: '/reports/financial' },
       { label: 'Customer Report', path: '/reports/customers' },
     ],
@@ -115,10 +104,6 @@ export const STATUS_COLORS: Record<string, string> = {
   paid: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
   overdue: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
   failed: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-  in: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-  out: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-  adjustment: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-  low_stock: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
   credit_reminder: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
   new_sale: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
   system: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
@@ -139,57 +124,21 @@ export const PAGINATION_DEFAULTS = {
   maxVisiblePages: 5,
 } as const;
 
-export const SORT_OPTIONS = {
-  products: [
-    { value: 'sellingPrice', label: 'Price' },
-    { value: 'stock', label: 'Stock' },
-    { value: 'createdAt', label: 'Date Added' },
-    { value: 'updatedAt', label: 'Last Updated' },
-    { value: 'categoryName', label: 'Category' },
-    { value: 'status', label: 'Status' },
-  ],
-  categories: [
-    { value: 'name', label: 'Name' },
-    { value: 'productCount', label: 'Product Count' },
-    { value: 'createdAt', label: 'Date Created' },
-  ],
-  customers: [
-    { value: 'name', label: 'Name' },
-    { value: 'email', label: 'Email' },
-    { value: 'totalSpent', label: 'Total Spent' },
-    { value: 'totalPurchases', label: 'Total Purchases' },
-    { value: 'creditBalance', label: 'Credit Balance' },
-    { value: 'createdAt', label: 'Date Added' },
-  ],
-  sales: [
-    { value: 'createdAt', label: 'Date' },
-    { value: 'total', label: 'Total' },
-    { value: 'customerName', label: 'Customer' },
-    { value: 'status', label: 'Status' },
-    { value: 'invoiceNumber', label: 'Invoice Number' },
-  ],
-  credits: [
-    { value: 'createdAt', label: 'Date Created' },
-    { value: 'dueDate', label: 'Due Date' },
-    { value: 'initialAmount', label: 'Amount' },
-    { value: 'remainingBalance', label: 'Balance' },
-    { value: 'customerName', label: 'Customer' },
-    { value: 'status', label: 'Status' },
-  ],
-  payments: [
-    { value: 'createdAt', label: 'Date' },
-    { value: 'amount', label: 'Amount' },
-    { value: 'customerName', label: 'Customer' },
-    { value: 'method', label: 'Method' },
-    { value: 'status', label: 'Status' },
-  ],
-  inventory: [
-    { value: 'createdAt', label: 'Date' },
-    { value: 'productName', label: 'Product' },
-    { value: 'type', label: 'Type' },
-    { value: 'quantity', label: 'Quantity' },
-  ],
-} as const;
+export const PRODUCT_UNITS = [
+  { value: 'piece', label: 'Piece' },
+  { value: 'set', label: 'Set' },
+  { value: 'meter', label: 'Meter' },
+  { value: 'square_meter', label: 'Square Meter' },
+  { value: 'kg', label: 'Kilogram' },
+  { value: 'liter', label: 'Liter' },
+  { value: 'box', label: 'Box' },
+  { value: 'pair', label: 'Pair' },
+] as const;
+
+export const PRODUCT_AVAILABILITY = [
+  { value: 'sur_commande', labelKey: 'products.surCommande' },
+  { value: 'sur_place', labelKey: 'products.surPlace' },
+] as const;
 
 export const CHART_COLORS = [
   '#6366f1',
@@ -225,31 +174,22 @@ export const CURRENCY_OPTIONS = [
   { value: 'AED', symbol: 'د.إ', label: 'UAE Dirham (د.إ)' },
 ] as const;
 
-export const PRODUCT_UNITS = [
-  { value: 'piece', label: 'Piece' },
-  { value: 'set', label: 'Set' },
-  { value: 'meter', label: 'Meter' },
-  { value: 'square_meter', label: 'Square Meter' },
-  { value: 'kg', label: 'Kilogram' },
-  { value: 'liter', label: 'Liter' },
-  { value: 'box', label: 'Box' },
-  { value: 'pair', label: 'Pair' },
-] as const;
+export const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
 
 export const API_ENDPOINTS = {
-  products: '/api/products',
-  categories: '/api/categories',
-  customers: '/api/customers',
-  sales: '/api/sales',
-  credits: '/api/credits',
-  payments: '/api/payments',
-  inventory: '/api/inventory',
-  notifications: '/api/notifications',
-  reports: '/api/reports',
-  dashboard: '/api/dashboard',
-  settings: '/api/settings',
-  auth: '/api/auth',
-  users: '/api/users',
+  products: '/api/v1/products',
+  categories: '/api/v1/categories',
+  customers: '/api/v1/customers',
+  sales: '/api/v1/sales',
+  credits: '/api/v1/credits',
+  payments: '/api/v1/payments',
+  notifications: '/api/v1/notifications',
+  reports: '/api/v1/reports',
+  dashboard: '/api/v1/dashboard',
+  settings: '/api/v1/settings',
+  auth: '/api/v1/auth',
+  users: '/api/v1/settings/users',
+  invoices: '/api/v1/invoices',
 } as const;
 
 export const STORAGE_KEYS = {

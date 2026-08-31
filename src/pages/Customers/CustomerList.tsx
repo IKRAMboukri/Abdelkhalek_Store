@@ -5,11 +5,8 @@ import type { Customer, PaginatedResult } from '@/types'
 
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
-import { Modal } from '@/components/ui/Modal'
 import { Table } from '@/components/ui/Table'
 import type { TableColumn } from '@/components/ui/Table'
-import { Input } from '@/components/ui/Input'
-import { Select } from '@/components/ui/Select'
 import { Pagination } from '@/components/ui/Pagination'
 import { SearchBar } from '@/components/ui/SearchBar'
 import { FilterBar } from '@/components/ui/FilterBar'
@@ -17,23 +14,11 @@ import type { FilterConfig } from '@/components/ui/FilterBar'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
+import { CustomerFormModal } from '@/components/customers/CustomerFormModal'
 import { customerService } from '@/services'
 import { useToast } from '@/hooks/useToast'
 import { useLocale } from '@/hooks/useLocale'
 import { PAGINATION_DEFAULTS } from '@/constants'
-
-const initialFormData: Omit<Customer, 'id' | 'createdAt' | 'updatedAt'> = {
-  name: '',
-  email: '',
-  phone: '',
-  address: '',
-  company: '',
-  notes: '',
-  totalPurchases: 0,
-  totalSpent: 0,
-  creditBalance: 0,
-  status: 'active',
-}
 
 export function CustomerList() {
   const navigate = useNavigate()
@@ -52,8 +37,6 @@ export function CustomerList() {
 
   const [modalOpen, setModalOpen] = useState(false)
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null)
-  const [formData, setFormData] = useState(initialFormData)
-  const [saving, setSaving] = useState(false)
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
@@ -100,44 +83,12 @@ export function CustomerList() {
 
   const handleAdd = () => {
     setEditingCustomer(null)
-    setFormData(initialFormData)
     setModalOpen(true)
   }
 
   const handleEdit = (customer: Customer) => {
     setEditingCustomer(customer)
-    setFormData({
-      name: customer.name,
-      email: customer.email,
-      phone: customer.phone,
-      address: customer.address,
-      company: customer.company,
-      notes: customer.notes,
-      totalPurchases: customer.totalPurchases,
-      totalSpent: customer.totalSpent,
-      creditBalance: customer.creditBalance,
-      status: customer.status,
-    })
     setModalOpen(true)
-  }
-
-  const handleSave = async () => {
-    setSaving(true)
-    try {
-      if (editingCustomer) {
-        await customerService.updateCustomer(editingCustomer.id, formData)
-        showToast('success', t('customers.updated'))
-      } else {
-        await customerService.createCustomer(formData)
-        showToast('success', t('customers.created'))
-      }
-      setModalOpen(false)
-      fetchCustomers()
-    } catch {
-      showToast('error', t('customers.saveError'))
-    } finally {
-      setSaving(false)
-    }
   }
 
   const handleDeleteRequest = (id: string) => {
@@ -183,11 +134,6 @@ export function CustomerList() {
     {
       key: 'totalPurchases',
       label: t('customers.totalPurchases'),
-    },
-    {
-      key: 'totalSpent',
-      label: t('customers.totalSpentLabel'),
-      render: (item) => `DH ${item.totalSpent.toFixed(2)}`,
     },
     {
       key: 'status',
@@ -316,76 +262,12 @@ export function CustomerList() {
         </Card>
       </div>
 
-      <Modal
+      <CustomerFormModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={editingCustomer ? t('customers.editTitle') : t('customers.addTitle')}
-        size="lg"
-        footer={
-          <>
-            <Button variant="outline" onClick={() => setModalOpen(false)}>
-              {t('common.cancel')}
-            </Button>
-            <Button loading={saving} onClick={handleSave}>
-              {editingCustomer ? t('common.update') : t('common.create')}
-            </Button>
-          </>
-        }
-      >
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <Input
-            label={t('common.name')}
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            required
-            className="h-10"
-          />
-          <Input
-            label={t('common.phone')}
-            value={formData.phone}
-            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-            className="h-10 ltr"
-          />
-          <div className="sm:col-span-2">
-            <Input
-              label={t('common.address')}
-              value={formData.address}
-              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              className="h-10"
-            />
-          </div>
-          <Input
-            label={t('customers.totalPurchases')}
-            type="number"
-            min={0}
-            value={formData.totalPurchases}
-            onChange={(e) => setFormData({ ...formData, totalPurchases: Number(e.target.value) })}
-            className="h-10 ltr"
-          />
-          <Input
-            label={t('customers.totalSpentLabel')}
-            type="number"
-            min={0}
-            step="0.01"
-            value={formData.totalSpent}
-            onChange={(e) => setFormData({ ...formData, totalSpent: Number(e.target.value) })}
-            className="h-10 ltr"
-          />
-          <div className="sm:col-span-2">
-            <Select
-              label={t('common.status')}
-              value={formData.status}
-              onChange={(e) => setFormData({ ...formData, status: e.target.value as Customer['status'] })}
-              options={[
-                { value: 'active', label: t('status.active') },
-                { value: 'inactive', label: t('status.inactive') },
-                { value: 'blocked', label: t('status.blocked') },
-              ]}
-              className="h-10"
-            />
-          </div>
-        </div>
-      </Modal>
+        customer={editingCustomer}
+        onSaved={() => fetchCustomers()}
+      />
 
       <ConfirmDialog
         open={deleteConfirmOpen}

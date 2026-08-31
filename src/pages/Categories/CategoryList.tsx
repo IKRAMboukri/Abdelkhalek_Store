@@ -141,7 +141,7 @@ export function CategoryList() {
       fetchCategories()
       loadAllCategories()
     } catch {
-      addToast({ type: 'error', title: t('common.validationError'), message: t('products.saveError') })
+      addToast({ type: 'error', title: t('common.validationError'), message: t('categories.saveError') })
     } finally {
       setSaving(false)
     }
@@ -155,8 +155,10 @@ export function CategoryList() {
       setDeleteConfirm(null)
       fetchCategories()
       loadAllCategories()
-    } catch {
-      addToast({ type: 'error', title: t('common.validationError'), message: t('products.deleteError') })
+    } catch (error) {
+      console.error('CATEGORY DELETE ERROR:', error)
+      console.error('CATEGORY DELETE ERROR MESSAGE:', error instanceof Error ? error.message : error)
+      addToast({ type: 'error', title: t('common.validationError'), message: t('categories.deleteError') })
     }
   }
 
@@ -264,7 +266,7 @@ export function CategoryList() {
                   </div>
                   <div className="p-4">
                     <div className="flex items-start justify-between gap-2 mb-1">
-                      <h3 className="text-base font-semibold text-text-primary truncate">
+                      <h3 className="text-base font-semibold text-text-primary truncate" translate="no">
                         {category.name}
                       </h3>
                       <Badge variant="info" size="sm">
@@ -282,6 +284,7 @@ export function CategoryList() {
                             <span
                               key={sub.id}
                               className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200"
+                              translate="no"
                             >
                               {sub.name}
                             </span>
@@ -387,6 +390,7 @@ export function CategoryList() {
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   placeholder={t('common.description')}
                   rows={3}
+                  translate="no"
                   className="block w-full rounded-lg border border-border bg-white px-3 py-2 text-sm text-text-primary placeholder-text-muted transition-all duration-150 focus:outline-hidden focus:ring-2 focus:ring-primary-500 focus:border-primary-500 hover:border-gray-300 resize-none"
                 />
               </div>
