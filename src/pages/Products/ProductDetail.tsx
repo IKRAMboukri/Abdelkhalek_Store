@@ -7,11 +7,13 @@ import { resolveOptionLabels } from '@/components/products/CategorySelector'
 import { useLocale } from '@/hooks/useLocale'
 import { useToast } from '@/hooks'
 import { productService, categoryService } from '@/services'
+import { resolveMediaUrl } from '@/utils/helpers'
 
 function ProductImage({ src, alt, className = '' }: { src?: string; alt: string; className?: string }) {
   const [imgError, setImgError] = useState(false)
+  const resolvedSrc = resolveMediaUrl(src)
 
-  if (!src || imgError) {
+  if (!resolvedSrc || imgError) {
     return (
       <div className={`bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center ${className}`}>
         <Package size={48} className="text-gray-300" />
@@ -21,7 +23,7 @@ function ProductImage({ src, alt, className = '' }: { src?: string; alt: string;
 
   return (
     <img
-      src={src}
+      src={resolvedSrc}
       alt={alt}
       className={`object-cover ${className}`}
       onError={() => setImgError(true)}

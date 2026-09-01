@@ -8,6 +8,7 @@ import { productService, categoryService } from '@/services'
 import { useToast } from '@/hooks'
 import type { Product, Category, FilterOptions } from '@/types'
 import { PAGINATION_DEFAULTS } from '@/constants'
+import { resolveMediaUrl } from '@/utils/helpers'
 import { Plus, Pencil, Trash2, AlertTriangle, Eye, Package } from 'lucide-react'
 import { ProductForm } from './ProductForm'
 
@@ -297,8 +298,9 @@ export function ProductList() {
 
 function ProductThumbnail({ src, alt }: { src?: string; alt: string }) {
   const [imgError, setImgError] = useState(false)
+  const resolvedSrc = resolveMediaUrl(src)
 
-  if (!src || imgError) {
+  if (!resolvedSrc || imgError) {
     return (
       <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
         <Package size={20} className="text-gray-300" />
@@ -308,7 +310,7 @@ function ProductThumbnail({ src, alt }: { src?: string; alt: string }) {
 
   return (
     <img
-      src={src}
+      src={resolvedSrc}
       alt={alt}
       className="w-12 h-12 rounded-xl object-cover shrink-0"
       onError={() => setImgError(true)}

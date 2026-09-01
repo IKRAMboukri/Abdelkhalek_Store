@@ -11,6 +11,7 @@ import {
 import { Breadcrumb } from './Breadcrumb'
 import { useLocale } from '@/hooks/useLocale'
 import { useAuth } from '@/context/AuthContext'
+import { resolveMediaUrl } from '@/utils/helpers'
 import clsx from 'clsx'
 
 interface HeaderProps {
@@ -143,7 +144,7 @@ export function Header({
             >
               <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center text-primary-700 dark:text-primary-300 font-semibold text-sm shrink-0 overflow-hidden">
                 {user?.avatar ? (
-                  <img src={user.avatar} alt="" className="w-full h-full object-cover" />
+                  <img src={resolveMediaUrl(user.avatar)} alt="" className="w-full h-full object-cover" />
                 ) : (
                   (user?.name ?? 'A').charAt(0).toUpperCase()
                 )}

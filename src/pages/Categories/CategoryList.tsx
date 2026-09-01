@@ -17,6 +17,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { PAGINATION_DEFAULTS } from '@/constants'
+import { resolveMediaUrl } from '@/utils/helpers'
 
 interface CategoryFormData {
   name: string
@@ -228,7 +229,7 @@ export function CategoryList() {
                   <div className="relative h-40 bg-gray-100 dark:bg-gray-800">
                     {category.image ? (
                       <img
-                        src={category.image}
+                        src={resolveMediaUrl(category.image)}
                         alt={category.name}
                         className="w-full h-full object-cover"
                         onError={(e) => {

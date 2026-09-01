@@ -1,3 +1,17 @@
+import { API_BASE_URL } from '@/constants';
+
+/**
+ * Turn a backend-relative asset path (e.g. /api/v1/uploads/logos/x.png) into
+ * an absolute URL using the centralized API base URL. Absolute URLs
+ * (https://…, //…) and inline data: URIs (base64 images/pdfs sent from the
+ * frontend) are returned untouched.
+ */
+export function resolveMediaUrl(url?: string | null): string {
+  if (!url) return '';
+  if (/^(https?:)?\/\//.test(url) || url.startsWith('data:')) return url;
+  return `${API_BASE_URL}${url.startsWith('/') ? url : `/${url}`}`;
+}
+
 export function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString()
 }

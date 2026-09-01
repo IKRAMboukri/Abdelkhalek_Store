@@ -16,7 +16,8 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { settingsService } from '@/services'
 import { useToast } from '@/hooks/useToast'
 import { useLocale } from '@/hooks/useLocale'
-import { CURRENCY_OPTIONS, DATE_FORMAT_OPTIONS, API_BASE_URL } from '@/constants'
+import { CURRENCY_OPTIONS, DATE_FORMAT_OPTIONS } from '@/constants'
+import { resolveMediaUrl } from '@/utils/helpers'
 import clsx from 'clsx'
 
 const LANG_OPTIONS = [
@@ -105,8 +106,7 @@ export function Settings() {
   const ALLOWED_LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/svg+xml']
   const MAX_LOGO_SIZE = 5 * 1024 * 1024
 
-  const resolveLogoUrl = (logo: string) =>
-    !logo ? '' : /^https?:\/\//.test(logo) ? logo : `${API_BASE_URL}${logo}`
+  const resolveLogoUrl = (logo: string) => resolveMediaUrl(logo)
 
   const handleLogoSelect = async (file: File | undefined) => {
     if (!file) return

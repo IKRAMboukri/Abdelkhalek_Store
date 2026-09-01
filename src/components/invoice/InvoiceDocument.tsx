@@ -1,6 +1,7 @@
 import type { Invoice } from '@/types'
 import { Building2, MapPin } from 'lucide-react'
 import { useLocale } from '@/hooks/useLocale'
+import { resolveMediaUrl } from '@/utils/helpers'
 import clsx from 'clsx'
 
 interface InvoiceDocumentProps {
@@ -20,7 +21,7 @@ export function InvoiceDocument({ invoice, className }: InvoiceDocumentProps) {
         <div className="flex items-center gap-4">
           {invoice.storeLogo ? (
             <img
-              src={invoice.storeLogo}
+              src={resolveMediaUrl(invoice.storeLogo)}
               alt={invoice.storeName}
               className="w-16 h-16 rounded-lg object-contain border border-gray-200"
             />
