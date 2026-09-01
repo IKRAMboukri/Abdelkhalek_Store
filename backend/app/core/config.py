@@ -13,7 +13,11 @@ class Settings(BaseSettings):
     API_V1_PREFIX: str = "/api/v1"
     DEBUG: bool = False
 
-    DATABASE_URL: str = "mysql+pymysql://root:root@localhost:3306/furniture_store"
+    # Local development defaults to the file-backed SQLite database also
+    # configured in backend/.env. Production deployments (e.g. Render) MUST
+    # provide the real database URL through the DATABASE_URL environment
+    # variable; nothing is ever hardcoded to a fixed host here.
+    DATABASE_URL: str = "sqlite:///./furniture_store.db"
     DATABASE_ECHO: bool = False
 
     SECRET_KEY: str = "change-me-in-production-please-use-a-long-random-key-0001"

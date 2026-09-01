@@ -1,14 +1,18 @@
-from contextlib import asynccontextmanager
+import logging
+from contextlib import asynccontextmanager, suppress
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
+from sqlalchemy.exc import SQLAlchemyError
 
 import app.models  # noqa: F401  (register all models on Base.metadata)
 from app.api.router import api_router
 from app.core.config import settings
 from app.database.seed import seed_if_empty
 from app.database.session import Base, engine
+
+logger = logging.getLogger(__name__)
 
 # Legacy migrations for databases created before the inventory removal.
 LEGACY_MIGRATIONS = [
@@ -108,31 +112,44 @@ def _make_category_id_nullable() -> None:
 
 
 def run_legacy_migrations() -> None:
-    _make_category_id_nullable()
-    with engine.begin() as conn:
-        for statement in LEGACY_MIGRATIONS:
-            try:
-                conn.execute(text(statement))
-            except Exception:
-                pass
-        # Store settings created by the original demo seed: replace only rows
-        # that still hold those exact untouched demo values.
-        conn.execute(
-            text(
-                """
-                UPDATE store_settings
-                SET store_name = 'Abdelkhalek_Store',
-                    store_email = 'abdelkhalekboukri668@gmail.com',
-                    store_phone = '0723312525',
-                    store_address = 'Casablanca, Sidi Maarouf, Hay Sacem',
-                    currency = 'MAD',
-                    currency_symbol = 'DH'
-                WHERE logo = ''
-                  AND store_name = 'Furniture Store'
-                  AND store_email = 'contact@furniturestore.ma'
-                """
-            )
-        )
+    """Apply legacy schema migrations.
+
+    Local developer databases are SQLite; production (Render) databases are a
+    real MySQL instance configured via the ``DATABASE_URL`` environment
+    variable in ``backend/app/core/config.py``. If the configured database
+    cannot be reached the migration is skipped with a logged warning instead of
+    preventing the API from starting; schema creation (``create_all``) and the
+    seed run right after and remain the source of truth.
+    """
+    try:
+        _make_category_id_nullable()
+        with engine.begin() as conn:
+            for statement in LEGACY_MIGRATIONS:
+                with suppress(Exception):
+                    conn.execute(text(statement))
+            # Store settings created by the original demo seed: replace only
+            # rows that still hold those exact untouched demo values. Safe on a
+            # fresh database where the table does not exist yet (create_all
+            # runs below).
+            with suppress(Exception):
+                conn.execute(
+                    text(
+                        """
+                        UPDATE store_settings
+                        SET store_name = 'Abdelkhalek_Store',
+                            store_email = 'abdelkhalekboukri668@gmail.com',
+                            store_phone = '0723312525',
+                            store_address = 'Casablanca, Sidi Maarouf, Hay Sacem',
+                            currency = 'MAD',
+                            currency_symbol = 'DH'
+                        WHERE logo = ''
+                          AND store_name = 'Furniture Store'
+                          AND store_email = 'contact@furniturestore.ma'
+                        """
+                    )
+                )
+    except SQLAlchemyError as exc:
+        logger.warning("Legacy migrations skipped (database unavailable): %s", exc)
 
 
 @asynccontextmanager
