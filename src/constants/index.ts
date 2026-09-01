@@ -174,7 +174,18 @@ export const CURRENCY_OPTIONS = [
   { value: 'AED', symbol: 'د.إ', label: 'UAE Dirham (د.إ)' },
 ] as const;
 
-export const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8000';
+/**
+ * Base URL for the backend API.
+ *
+ * The production value is injected at build time through the public Vite
+ * variable VITE_API_URL (e.g. https://abdelkhalek-store.onrender.com).
+ * localhost is used as a development-only fallback so `npm run dev` works
+ * without configuration; in a production build the string below is replaced
+ * by the env var or empty, never by a local machine address.
+ */
+const LOCAL_DEV_API_URL = 'http://localhost:8000';
+
+export const API_BASE_URL = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? LOCAL_DEV_API_URL : '');
 
 export const API_ENDPOINTS = {
   products: '/api/v1/products',

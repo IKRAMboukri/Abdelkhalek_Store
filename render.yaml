@@ -1,0 +1,24 @@
+# Render Blueprint for the Abdelkhalek_Store frontend (Vite + React SPA).
+# Deploy via: New > Blueprint, or create a Static Site manually with these values.
+#
+# Service type:    Static Site
+# Root directory:  (repo root — frontend lives at the repository root)
+# Build command:   npm ci && npm run build
+# Publish dir:     dist
+services:
+  - type: web
+    name: abdelkhalek-store-frontend
+    runtime: static
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    routes:
+      # SPA catch-all: serve index.html for every client-side route
+      # (/login, /dashboard, /products, /categories, /customers, /sales,
+      # /settings, ...) so refresh/deep links never 404.
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      # Public API base URL, baked into the bundle at build time.
+      - key: VITE_API_URL
+        value: https://abdelkhalek-store.onrender.com
