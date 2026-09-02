@@ -1,6 +1,6 @@
 export const en = {
   app: {
-    name: 'FurniStore',
+    name: 'Abdelkhalek_Store',
     tagline: 'Furniture Store Management',
   },
   auth: {

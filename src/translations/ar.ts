@@ -1,6 +1,6 @@
 export const ar = {
   app: {
-    name: 'FurniStore',
+    name: 'Abdelkhalek_Store',
     tagline: 'نظام إدارة متجر الأثاث',
   },
   auth: {

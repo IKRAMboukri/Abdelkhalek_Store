@@ -1,6 +1,6 @@
 export const fr = {
   app: {
-    name: 'FurniStore',
+    name: 'Abdelkhalek_Store',
     tagline: 'Système de Gestion de Magasin de Meubles',
   },
   auth: {

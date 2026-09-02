@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
@@ -12,8 +12,12 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronDown,
+  Store,
 } from 'lucide-react'
 import { useLocale } from '@/hooks/useLocale'
+import { settingsService } from '@/services'
+import type { StoreSettings } from '@/types'
+import { resolveMediaUrl } from '@/utils/helpers'
 import clsx from 'clsx'
 
 const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
@@ -32,6 +36,15 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
   const navigate = useNavigate()
   const { t, locale } = useLocale()
   const [expandedItems, setExpandedItems] = useState<string[]>([])
+  const [settings, setSettings] = useState<StoreSettings | null>(null)
+
+  useEffect(() => {
+    let active = true
+    settingsService.getStoreSettings()
+      .then((data) => { if (active) setSettings(data) })
+      .catch(() => {})
+    return () => { active = false }
+  }, [])
 
   const navItems = [
     { icon: 'LayoutDashboard', label: t('nav.dashboard'), path: '/', subItems: [] },
@@ -131,11 +144,24 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
     )}>
       <div className="flex items-center h-16 px-4 border-b border-white/10 shrink-0">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center shrink-0">
-            <Package size={18} className="text-white" />
+          <div className="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center overflow-hidden shrink-0">
+            {settings?.logo ? (
+              <img
+                src={resolveMediaUrl(settings.logo)}
+                alt={settings.storeName}
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  ;(e.target as HTMLImageElement).style.display = 'none'
+                }}
+              />
+            ) : (
+              <Store size={18} className="text-white" />
+            )}
           </div>
           {!collapsed && (
-            <span className="text-lg font-bold text-white truncate">{t('app.name')}</span>
+            <span className="text-lg font-bold text-white truncate">
+              {settings?.storeName || t('app.name')}
+            </span>
           )}
         </div>
       </div>
