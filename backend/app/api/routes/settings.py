@@ -1,3 +1,4 @@
+import re
 import uuid
 from pathlib import Path
 
@@ -5,14 +6,19 @@ from fastapi import APIRouter, File, HTTPException, UploadFile, status
 from fastapi.responses import FileResponse
 
 from app.api.deps import CurrentUser, DbSession, bad_request, not_found
+from app.core.config import settings
 from app.schemas.settings import StoreSettingsRead, StoreSettingsUpdate
 from app.schemas.user import UserCreate, UserRead, UserUpdate
 from app.services import SettingsService, UserService
 
 router = APIRouter(prefix="/settings", tags=["settings"])
 
-# backend/uploads/logos — outside the app package, next to the DB file
-UPLOAD_DIR = Path(__file__).resolve().parents[3] / "uploads" / "logos"
+# Configurable path (default backend/uploads/logos); set MEDIA_ROOT to a
+# mounted persistent disk path in production so logos survive restarts.
+UPLOAD_DIR = settings.MEDIA_ROOT
+# Create the directory at import time so a missing/unwritable storage path
+# fails fast at startup (visible in Render logs) instead of on first upload.
+UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 ALLOWED_LOGO_TYPES = {
     "image/png": ".png",
     "image/jpeg": ".jpg",
@@ -20,7 +26,36 @@ ALLOWED_LOGO_TYPES = {
     "image/gif": ".gif",
     "image/svg+xml": ".svg",
 }
+# Fallback: match by filename suffix when the client reports no/odd MIME type.
+LOGO_EXTENSIONS = {".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg"}
 MAX_LOGO_SIZE = 5 * 1024 * 1024  # 5 MB
+
+_SVG_PROBE_RE = re.compile(rb"<svg[\s>]", re.IGNORECASE)
+
+
+def _resolve_logo_extension(content_type: str | None, filename: str, data: bytes) -> str | None:
+    """Resolve the logo extension from, in order: MIME type, filename suffix,
+    and file signature. Returns None when the file looks like neither a known
+    raster/SVG image nor a supported content type."""
+    normalized = (content_type or "").split(";", 1)[0].strip().lower()
+    if normalized in ALLOWED_LOGO_TYPES:
+        return ALLOWED_LOGO_TYPES[normalized]
+
+    suffix = Path(filename).suffix.lower()
+    if suffix in LOGO_EXTENSIONS:
+        return ".jpg" if suffix == ".jpeg" else suffix
+
+    if data.startswith(b"\x89PNG\r\n\x1a\n"):
+        return ".png"
+    if data.startswith(b"\xff\xd8\xff"):
+        return ".jpg"
+    if data[:4] in (b"GIF87a", b"GIF89a"):
+        return ".gif"
+    if len(data) >= 12 and data[:4] == b"RIFF" and data[8:12] == b"WEBP":
+        return ".webp"
+    if _SVG_PROBE_RE.search(data[:1024]):
+        return ".svg"
+    return None
 
 
 @router.get("", response_model=StoreSettingsRead)
@@ -42,13 +77,6 @@ def upload_logo(
     file: UploadFile = File(...),
 ):
     """Persist a logo image on the server and store its URL in store_settings."""
-    content_type = (file.content_type or "").lower()
-    extension = ALLOWED_LOGO_TYPES.get(content_type)
-    if extension is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Unsupported image type. Use PNG, JPG, WEBP, GIF or SVG.",
-        )
     data = file.file.read()
     if len(data) == 0:
         raise bad_request(ValueError("The selected file is empty."))
@@ -58,10 +86,16 @@ def upload_logo(
             detail="Image is too large. Maximum size is 5 MB.",
         )
 
+    extension = _resolve_logo_extension(file.content_type, file.filename or "", data)
+    if extension is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Unsupported image type. Use PNG, JPG, WEBP, GIF or SVG.",
+        )
+
     service = SettingsService(db)
     settings_row = service.get()
 
-    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     filename = f"logo_{uuid.uuid4().hex}{extension}"
     target = UPLOAD_DIR / filename
     target.write_bytes(data)
@@ -116,7 +150,8 @@ def get_current_logo(db: DbSession):
     path = UPLOAD_DIR / Path(logo).name
     if not path.is_file():
         raise not_found("Logo file missing")
-    return FileResponse(path, media_type=LOGO_MEDIA_TYPES.get(path.suffix.lower(), "application/octet-stream"))
+    media_type = LOGO_MEDIA_TYPES.get(path.suffix.lower(), "application/octet-stream")
+    return FileResponse(path, media_type=media_type)
 
 
 @router.get("/users", response_model=list[UserRead])

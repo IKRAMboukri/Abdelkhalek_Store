@@ -14,6 +14,7 @@ import { StatusBadge } from '@/components/ui/StatusBadge'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { settingsService } from '@/services'
+import { ApiError } from '@/services/api/client'
 import { useToast } from '@/hooks/useToast'
 import { useLocale } from '@/hooks/useLocale'
 import { CURRENCY_OPTIONS, DATE_FORMAT_OPTIONS } from '@/constants'
@@ -123,8 +124,8 @@ export function Settings() {
       const updated = await settingsService.uploadLogo(file)
       setStoreSettings(updated)
       showToast('success', t('settings.logoUploaded'))
-    } catch {
-      showToast('error', t('settings.logoUploadFailed'))
+    } catch (err) {
+      showToast('error', err instanceof ApiError && err.detail ? err.detail : t('settings.logoUploadFailed'))
     } finally {
       setUploadingLogo(false)
       if (logoInputRef.current) logoInputRef.current.value = ''

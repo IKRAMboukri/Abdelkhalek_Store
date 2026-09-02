@@ -88,7 +88,13 @@ export async function getOrNull<T>(path: string): Promise<T | null> {
 }
 
 export function post<T>(path: string, body?: unknown): Promise<T> {
-  return apiRequest<T>(path, { method: 'POST', body: JSON.stringify(body ?? {}) });
+  // FormData must pass through untouched — the browser sets the multipart
+  // Content-Type and boundary. JSON.stringify(new FormData()) yields "{}",
+  // silently dropping the file and making FastAPI reject the request.
+  return apiRequest<T>(path, {
+    method: 'POST',
+    body: body instanceof FormData ? body : JSON.stringify(body ?? {}),
+  });
 }
 
 export function put<T>(path: string, body?: unknown): Promise<T> {

@@ -22,3 +22,38 @@ services:
       # Public API base URL, baked into the bundle at build time.
       - key: VITE_API_URL
         value: https://abdelkhalek-store.onrender.com
+
+  # FastAPI backend. The service name matches the live API subdomain
+  # (abdelkhalek-store.onrender.com) so re-applying this blueprint updates the
+  # existing service instead of creating a duplicate. The mounted persistent
+  # disk + MEDIA_ROOT is what makes uploaded logos survive restarts/redeploys.
+  # Note: persistent disks require a paid (non-Free) instance type.
+  - type: web
+    name: abdelkhalek-store
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      # Logo/media storage goes on the persistent disk (never the ephemeral
+      # container filesystem) so uploads are not wiped on every deploy.
+      - key: MEDIA_ROOT
+        value: /var/data/logos
+      # Secrets already configured on the running service are left untouched
+      # (sync: false) — values below only apply to a freshly created service.
+      - key: DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: SEED_DEFAULT_PASSWORD
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false
+      - key: CORS_ALLOW_ORIGIN_REGEX
+        sync: false
+    disk:
+      name: backend-data
+      mountPath: /var/data
+      sizeGB: 1
