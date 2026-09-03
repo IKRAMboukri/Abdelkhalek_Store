@@ -176,7 +176,7 @@ export function Header({
                   <div className="border-t border-border mt-1 pt-1">
                     <button
                       type="button"
-                      onClick={() => { setShowUserMenu(false); void logout() }}
+                      onClick={() => { setShowUserMenu(false); logout() }}
                       className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
                     >
                       <LogOut size={16} />

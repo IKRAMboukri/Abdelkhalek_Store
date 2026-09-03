@@ -2,14 +2,14 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { authService, type AuthUser } from '@/services'
-import { AUTH_UNAUTHORIZED_EVENT } from '@/services/api/client'
+import { AUTH_UNAUTHORIZED_EVENT, clearStoredToken } from '@/services/api/client'
 
 interface AuthContextValue {
   user: AuthUser | null
   /** True while the stored token is being validated against /auth/me. */
   initializing: boolean
   login: (email: string, password: string) => Promise<void>
-  logout: () => Promise<void>
+  logout: () => void
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -54,15 +54,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(authenticated)
   }, [])
 
-  const logout = useCallback(async () => {
-    try {
-      await authService.logout()
-    } finally {
-      setUser(null)
-      // Use a full page replace to nuke the browser history stack so the
-      // Back button cannot return the user to any protected page.
-      window.location.replace('/login')
+  // Logout must be fully synchronous — never await a network request before
+  // navigating.  In a PWA the service worker can intercept / delay fetch()
+  // calls (Workbox NetworkFirst with a 10 s timeout), which would leave the
+  // user stranded on a protected page while the await hangs.
+  const logout = useCallback(() => {
+    // 1. Clear auth data synchronously — no async, no await.
+    clearStoredToken()
+    setUser(null)
+
+    // 2. Clear the service-worker API cache so stale authenticated responses
+    //    are never served after logout.
+    if ('caches' in window) {
+      caches.delete('api-cache').catch(() => {})
     }
+
+    // 3. Best-effort: notify the server in the background (fire-and-forget).
+    authService.logout().catch(() => {})
+
+    // 4. Navigate immediately — a hard replace so the Back button cannot
+    //    return to a protected page.
+    window.location.replace('/login')
   }, [])
 
   const value = useMemo(
