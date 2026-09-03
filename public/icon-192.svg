@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a365d"/>
+      <stop offset="100%" style="stop-color:#2c5282"/>
+    </linearGradient>
+  </defs>
+  <rect width="192" height="192" rx="32" fill="url(#bg)"/>
+  <!-- Chair icon -->
+  <g transform="translate(96, 88)" fill="none" stroke="#e2e8f0" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Seat -->
+    <path d="M-30,0 L30,0 L25,15 L-25,15 Z" fill="#e2e8f0" opacity="0.9"/>
+    <!-- Backrest -->
+    <path d="M-25,-35 L25,-35 L30,0 L-30,0 Z" fill="#e2e8f0" opacity="0.7"/>
+    <!-- Front legs -->
+    <line x1="-25" y1="15" x2="-28" y2="40"/>
+    <line x1="25" y1="15" x2="28" y2="40"/>
+  </g>
+  <!-- Text -->
+  <text x="96" y="152" text-anchor="middle" font-family="Arial, sans-serif" font-weight="700" font-size="22" fill="#e2e8f0" letter-spacing="1">ABDELKHALEK</text>
+</svg>
