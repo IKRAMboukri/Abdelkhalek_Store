@@ -16,7 +16,6 @@ import {
 import { useLocale } from '@/hooks/useLocale'
 import { settingsService } from '@/services'
 import type { StoreSettings } from '@/types'
-import { resolveMediaUrl } from '@/utils/helpers'
 import clsx from 'clsx'
 
 const iconMap: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
@@ -144,16 +143,11 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
       <div className="flex items-center h-16 px-4 border-b border-white/10 shrink-0">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
-            {settings?.logo && (
-              <img
-                src={resolveMediaUrl(settings.logo)}
-                alt={settings.storeName}
-                className="w-full h-full object-contain"
-                onError={(e) => {
-                  ;(e.target as HTMLImageElement).style.display = 'none'
-                }}
-              />
-            )}
+            <img
+              src="/abdelkhalek-logo.jpeg"
+              alt={settings?.storeName || t('app.name')}
+              className="w-full h-full object-contain"
+            />
           </div>
           {!collapsed && (
             <span className="text-lg font-bold text-white truncate">

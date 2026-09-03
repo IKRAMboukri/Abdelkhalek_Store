@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/Input'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/hooks/useLocale'
 import { ApiError } from '@/services/api/client'
-import { API_BASE_URL } from '@/constants'
 
 export default function LoginPage() {
   const { t } = useLocale()
@@ -55,12 +54,9 @@ export default function LoginPage() {
         <div className="flex flex-col items-center mb-8">
           <div className="w-20 h-20 rounded-2xl flex items-center justify-center overflow-hidden mb-4">
             <img
-              src={`${API_BASE_URL}/api/v1/uploads/logo`}
+              src="/abdelkhalek-logo.jpeg"
               alt={t('app.name')}
               className="w-full h-full object-contain"
-              onError={(e) => {
-                ;(e.target as HTMLImageElement).style.display = 'none'
-              }}
             />
           </div>
           <h1 className="text-2xl font-bold text-text-primary">{t('app.name')}</h1>
