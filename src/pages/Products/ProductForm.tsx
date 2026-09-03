@@ -4,7 +4,7 @@ import type { Product, SelectOption, Category } from '@/types'
 import { categoryService } from '@/services'
 import { Button, Input, Select, Textarea } from '@/components/ui'
 import { CategorySelector } from '@/components/products/CategorySelector'
-import { Package, DollarSign, FileText, Tag, ArrowLeft, AlertTriangle, CheckCircle2, Upload, X } from 'lucide-react'
+import { Package, DollarSign, FileText, Tag, ArrowLeft, CheckCircle2, Upload, X } from 'lucide-react'
 
 interface ProductFormProps {
   product?: Product
@@ -343,13 +343,6 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
           )}
         </div>
       </div>
-
-      {Object.keys(errors).length > 0 && (
-        <div className="p-3.5 rounded-xl bg-red-50 border border-red-100 text-sm text-red-600 flex items-center gap-2.5">
-          <AlertTriangle size={16} className="shrink-0 text-red-500" />
-          <span>{t('products.fixErrors')}</span>
-        </div>
-      )}
 
       <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
         <Button variant="outline" onClick={onCancel} disabled={loading} type="button" className="!rounded-xl">

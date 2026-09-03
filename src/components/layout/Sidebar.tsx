@@ -142,7 +142,7 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
     )}>
       <div className="flex items-center h-16 px-4 border-b border-white/10 shrink-0">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
             <img
               src="/abdelkhalek-logo.jpeg"
               alt={settings?.storeName || t('app.name')}
