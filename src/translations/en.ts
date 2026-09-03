@@ -245,7 +245,6 @@ export const en = {
     pricePositive: 'Price must be greater than 0',
     unitRequired: 'Unit is required',
     statusRequired: 'Status is required',
-    fixErrors: 'Please fix the errors above before submitting.',
     quantitySold: 'Quantity Sold',
   },
   categories: {

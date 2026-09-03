@@ -245,7 +245,6 @@ export const ar = {
     pricePositive: 'يجب أن يكون السعر أكبر من 0',
     unitRequired: 'الوحدة مطلوبة',
     statusRequired: 'الحالة مطلوبة',
-    fixErrors: 'الرجاء تصحيح الأخطاء أعلاه قبل الإرسال.',
     quantitySold: 'الكمية المباعة',
   },
   categories: {
