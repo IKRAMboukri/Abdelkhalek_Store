@@ -12,7 +12,6 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronDown,
-  Store,
 } from 'lucide-react'
 import { useLocale } from '@/hooks/useLocale'
 import { settingsService } from '@/services'
@@ -144,8 +143,8 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
     )}>
       <div className="flex items-center h-16 px-4 border-b border-white/10 shrink-0">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-8 h-8 rounded-lg bg-primary-600 flex items-center justify-center overflow-hidden shrink-0">
-            {settings?.logo ? (
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden shrink-0">
+            {settings?.logo && (
               <img
                 src={resolveMediaUrl(settings.logo)}
                 alt={settings.storeName}
@@ -154,8 +153,6 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
                   ;(e.target as HTMLImageElement).style.display = 'none'
                 }}
               />
-            ) : (
-              <Store size={18} className="text-white" />
             )}
           </div>
           {!collapsed && (

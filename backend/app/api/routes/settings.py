@@ -154,6 +154,24 @@ def get_current_logo(db: DbSession):
     return FileResponse(path, media_type=media_type)
 
 
+@uploads_router.get("/logo", response_class=FileResponse)
+def get_current_logo_public(db: DbSession):
+    """Serve the currently configured store logo without authentication.
+
+    The login page is reachable before a user is authenticated, so it cannot
+    read the protected /settings endpoint to discover the logo filename.
+    This public route resolves the current logo (persisted in store settings)
+    so it stays visible on refresh, logout/login and redeployment."""
+    logo = SettingsService(db).get().logo
+    if not logo.startswith("/api/v1/uploads/logos/"):
+        raise not_found("No logo uploaded")
+    path = UPLOAD_DIR / Path(logo).name
+    if not path.is_file():
+        raise not_found("Logo file missing")
+    media_type = LOGO_MEDIA_TYPES.get(path.suffix.lower(), "application/octet-stream")
+    return FileResponse(path, media_type=media_type)
+
+
 @router.get("/users", response_model=list[UserRead])
 def list_users(db: DbSession):
     service = UserService(db)

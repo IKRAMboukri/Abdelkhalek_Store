@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { Mail, Lock, Eye, EyeOff, Armchair, AlertCircle } from 'lucide-react'
+import { Mail, Lock, Eye, EyeOff, AlertCircle } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { useAuth } from '@/context/AuthContext'
 import { useLocale } from '@/hooks/useLocale'
 import { ApiError } from '@/services/api/client'
+import { API_BASE_URL } from '@/constants'
 
 export default function LoginPage() {
   const { t } = useLocale()
@@ -52,8 +53,15 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-surface-secondary p-4">
       <div className="w-full max-w-md animate-fade-in">
         <div className="flex flex-col items-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-primary-600 flex items-center justify-center text-white shadow-lg shadow-primary-600/25 mb-4">
-            <Armchair size={28} />
+          <div className="w-20 h-20 rounded-2xl flex items-center justify-center overflow-hidden mb-4">
+            <img
+              src={`${API_BASE_URL}/api/v1/uploads/logo`}
+              alt={t('app.name')}
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                ;(e.target as HTMLImageElement).style.display = 'none'
+              }}
+            />
           </div>
           <h1 className="text-2xl font-bold text-text-primary">{t('app.name')}</h1>
           <p className="text-sm text-text-muted mt-1">{t('auth.adminArea')}</p>
