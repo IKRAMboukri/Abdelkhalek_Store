@@ -55,10 +55,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const logout = useCallback(async () => {
-    await authService.logout()
-    setUser(null)
-    navigate('/login', { replace: true })
-  }, [navigate])
+    try {
+      await authService.logout()
+    } finally {
+      setUser(null)
+      // Use a full page replace to nuke the browser history stack so the
+      // Back button cannot return the user to any protected page.
+      window.location.replace('/login')
+    }
+  }, [])
 
   const value = useMemo(
     () => ({ user, initializing, login, logout }),

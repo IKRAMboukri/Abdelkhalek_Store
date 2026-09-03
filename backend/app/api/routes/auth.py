@@ -21,7 +21,7 @@ def me(current_user: CurrentUser):
     return UserRead.model_validate(current_user)
 
 
-@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/logout", status_code=status.HTTP_204_NO_CONTENT)
 def logout(current_user: CurrentUser):
     # JWTs are stateless: the server acknowledges the call and the client
     # discards the token. Kept behind CurrentUser so the request is validated.
