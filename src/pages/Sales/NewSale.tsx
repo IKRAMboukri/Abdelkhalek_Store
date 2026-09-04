@@ -598,7 +598,7 @@ export function NewSale() {
           navigate('/sales')
         }}
         title={t('invoices.invoicePreview')}
-        size="xl"
+        size="lg"
         footer={
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={() => window.print()}>
