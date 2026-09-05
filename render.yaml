@@ -25,9 +25,10 @@ services:
 
   # FastAPI backend. The service name matches the live API subdomain
   # (abdelkhalek-store.onrender.com) so re-applying this blueprint updates the
-  # existing service instead of creating a duplicate. The mounted persistent
-  # disk + MEDIA_ROOT is what makes uploaded logos survive restarts/redeploys.
-  # Note: persistent disks require a paid (non-Free) instance type.
+  # existing service instead of creating a duplicate. Data persistence relies
+  # on an external managed PostgreSQL database (e.g. Neon free tier) and on
+  # uploaded logos being stored inside that database — no persistent disk is
+  # required, so the service can stay on the Free plan.
   - type: web
     name: abdelkhalek-store
     runtime: python
@@ -37,14 +38,18 @@ services:
     healthCheckPath: /
     autoDeploy: true
     envVars:
-      # Logo/media storage goes on the persistent disk (never the ephemeral
-      # container filesystem) so uploads are not wiped on every deploy.
-      - key: MEDIA_ROOT
-        value: /var/data/logos
-      # Secrets already configured on the running service are left untouched
-      # (sync: false) — values below only apply to a freshly created service.
+      # DATABASE_URL is a secret containing credentials, so it is NOT stored in
+      # this repo. Configure it manually in the Render dashboard under
+      # Service -> Environment for "abdelkhalek-store".
+      #
+      #   Value (Neon): postgresql://user:password@host/neondb?sslmode=require
+      #
+      # If DATABASE_URL is missing/unset, the backend falls back to the local
+      # SQLite default, which is what caused the production data loss earlier.
       - key: DATABASE_URL
         sync: false
+      # Secrets already configured on the running service are left untouched
+      # (sync: false) — values below only apply to a freshly created service.
       - key: SECRET_KEY
         sync: false
       - key: SEED_DEFAULT_PASSWORD
@@ -53,7 +58,3 @@ services:
         sync: false
       - key: CORS_ALLOW_ORIGIN_REGEX
         sync: false
-    disk:
-      name: backend-data
-      mountPath: /var/data
-      sizeGB: 1

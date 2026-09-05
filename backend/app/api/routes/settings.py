@@ -1,9 +1,9 @@
+import base64
 import re
-import uuid
 from pathlib import Path
 
 from fastapi import APIRouter, File, HTTPException, UploadFile, status
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 
 from app.api.deps import CurrentUser, DbSession, bad_request, not_found
 from app.core.config import settings
@@ -76,7 +76,9 @@ def upload_logo(
     current_user: CurrentUser,
     file: UploadFile = File(...),
 ):
-    """Persist a logo image on the server and store its URL in store_settings."""
+    """Persist a logo image in the database (as a base64 data URI) so uploads
+    survive restarts and redeploys without any local storage. The logo value is
+    stored in store_settings.logo and served back to the frontend as-is."""
     data = file.file.read()
     if len(data) == 0:
         raise bad_request(ValueError("The selected file is empty."))
@@ -93,20 +95,21 @@ def upload_logo(
             detail="Unsupported image type. Use PNG, JPG, WEBP, GIF or SVG.",
         )
 
+    media_type = LOGO_MEDIA_TYPES.get(extension, "application/octet-stream")
+    encoded = base64.b64encode(data).decode("ascii")
+    data_uri = f"data:{media_type};base64,{encoded}"
+
     service = SettingsService(db)
     settings_row = service.get()
 
-    filename = f"logo_{uuid.uuid4().hex}{extension}"
-    target = UPLOAD_DIR / filename
-    target.write_bytes(data)
-
-    # Remove the previous uploaded file to avoid orphans.
+    # Remove the previous uploaded file from disk (legacy storage) to avoid
+    # orphans. New logos are stored entirely inside the database.
     old_logo = settings_row.logo
     if old_logo.startswith("/api/v1/uploads/logos/"):
         old_path = UPLOAD_DIR / Path(old_logo).name
         old_path.unlink(missing_ok=True)
 
-    settings_row.logo = f"/api/v1/uploads/logos/{filename}"
+    settings_row.logo = data_uri
     db.flush()
     return StoreSettingsRead.model_validate(settings_row)
 
@@ -145,6 +148,9 @@ def get_logo_file(filename: str):
 def get_current_logo(db: DbSession):
     """Serve the currently configured logo (used as a fallback URL)."""
     logo = SettingsService(db).get().logo
+    if logo.startswith("data:"):
+        media_type = logo.split(";", 1)[0].split(":", 1)[1]
+        return Response(content=base64.b64decode(logo.split(",", 1)[1]), media_type=media_type)
     if not logo.startswith("/api/v1/uploads/logos/"):
         raise not_found("No logo uploaded")
     path = UPLOAD_DIR / Path(logo).name
@@ -163,6 +169,9 @@ def get_current_logo_public(db: DbSession):
     This public route resolves the current logo (persisted in store settings)
     so it stays visible on refresh, logout/login and redeployment."""
     logo = SettingsService(db).get().logo
+    if logo.startswith("data:"):
+        media_type = logo.split(";", 1)[0].split(":", 1)[1]
+        return Response(content=base64.b64decode(logo.split(",", 1)[1]), media_type=media_type)
     if not logo.startswith("/api/v1/uploads/logos/"):
         raise not_found("No logo uploaded")
     path = UPLOAD_DIR / Path(logo).name
