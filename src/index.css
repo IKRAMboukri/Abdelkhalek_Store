@@ -262,82 +262,88 @@ main::-webkit-scrollbar {
 }
 
 @media print {
-  /* ---- Hide the app shell (everything that is NOT the invoice portal) ---- */
-  body > :not(.fixed) {
-    display: none !important;
+  /* Neutralize entry animations/transforms on the modal overlay and backdrop:
+     the running translate/scale animation creates a composited containing
+     block that can blank the printed invoice in Chrome. Print should not
+     animate anyway. */
+  .animate-scale-in,
+  .animate-fade-in {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
   }
 
-  /* Hide the modal chrome (title bar, close X, footer buttons, backdrop)
-     while keeping the inner invoice visible.  The portal overlay
-     (.fixed.inset-0…) is the only direct child of body that starts with
-     "fixed", so body > :not(.fixed) correctly hides the app root. */
-  .fixed.inset-0 > .fixed.inset-0 { display: none !important; }
-  .fixed.inset-0 > .relative        { visibility: hidden !important; }
+  /* Only hide what is NOT the invoice. visibility (unlike display:none) keeps
+     every ancestor of the invoice in the render tree, so the portal modal that
+     wraps the receipt must NOT be display:none/visibility:hidden. This is the
+     standard, browser-safe technique for printing a nested element. */
+  body * {
+    visibility: hidden;
+  }
 
-  /* Make the invoice + every child visible & rendered */
   .invoice-printable,
   .invoice-printable * {
-    visibility: visible !important;
-    display: revert !important;
+    visibility: visible;
   }
 
-  /* ---- Place a narrow receipt block at the top-centre of the page ---- */
+  /* Pull the invoice out of the modal's centered/relative boxes and place a
+     compact ~130mm receipt at the top-centre of the page. position:fixed
+     anchors to the page; centring uses a negative left margin (no transform),
+     so the block stays fully inside the printable area. */
   .invoice-printable {
     position: fixed !important;
     top: 0;
     left: 50%;
-    transform: translateX(-50%);
+    margin: 0 0 0 -65mm;
     width: 130mm;
-    margin: 0;
     padding: 8px 10px;
-    border-radius: 0;
     background: white;
+    border-radius: 0;
     box-shadow: none;
     border: none;
     color: #000;
     line-height: 1.25;
   }
 
-  /* ---- Compact inner layout (print only) ---- */
+  /* ---- scaled-down but readable compact typography ---- */
 
   /* header */
   .invoice-printable .flex.items-start.justify-between {
-    gap: 6px;
+    gap: 8px;
     padding-bottom: 4px !important;
     margin-bottom: 4px !important;
   }
-  .invoice-printable h1 { font-size: 12px !important; margin: 0 !important; }
-  .invoice-printable > div:first-child > div:first-child .text-\[11px\] { font-size: 8px !important; }
-  .invoice-printable h2 { font-size: 13px !important; margin: 0 !important; }
-  .invoice-printable > div:first-child > div:last-child .text-xs { font-size: 8px !important; }
+  .invoice-printable h1 { font-size: 13px !important; margin: 0 !important; }
+  .invoice-printable h2 { font-size: 14px !important; margin: 0 !important; }
+  .invoice-printable > div:first-child > div:first-child .text-\[11px\] { font-size: 9px !important; }
+  .invoice-printable > div:first-child > div:last-child .text-xs { font-size: 9px !important; }
 
   /* logo */
-  .invoice-printable img { width: 32px !important; height: 32px !important; }
+  .invoice-printable img { width: 34px !important; height: 34px !important; }
 
   /* bill-to */
   .invoice-printable .mb-2 { margin-bottom: 3px !important; }
   .invoice-printable .p-2  { padding: 4px 6px !important; }
-  .invoice-printable .text-\[11px\] { font-size: 8px !important; }
-  .invoice-printable .font-semibold { font-size: 10px !important; }
-  .invoice-printable .text-sm       { font-size: 9px  !important; }
+  .invoice-printable .text-\[11px\] { font-size: 9px !important; }
+  .invoice-printable .font-semibold { font-size: 11px !important; }
+  .invoice-printable .text-sm       { font-size: 10px !important; }
 
   /* table */
-  .invoice-printable table { font-size: 9px !important; }
+  .invoice-printable table { font-size: 10px !important; }
   .invoice-printable thead th {
-    font-size: 8px !important;
-    padding: 2px !important;
+    font-size: 9px !important;
+    padding: 2px 3px !important;
   }
   .invoice-printable tbody td {
-    font-size: 9px !important;
-    padding: 1px 2px !important;
+    font-size: 10px !important;
+    padding: 1px 3px !important;
   }
 
   /* totals */
-  .invoice-printable .w-52 { width: 96px !important; }
-  .invoice-printable .space-y-0\.5 { gap: 0 !important; }
+  .invoice-printable .w-52 { width: 100px !important; }
 
   /* payment-info & footer */
-  .invoice-printable .border-t-2   { margin-top: 4px !important; padding-top: 4px !important; }
-  .invoice-printable .border-t-2 + div { font-size: 9px !important; }
-  .invoice-printable .text-center  { font-size: 9px !important; padding-top: 4px !important; margin-top: 2px !important; }
+  .invoice-printable .border-t-2 + div { font-size: 10px !important; }
+  .invoice-printable .border-t-2 { margin-top: 4px !important; padding-top: 4px !important; }
+  .invoice-printable .text-center { font-size: 10px !important; margin-top: 3px !important; padding-top: 4px !important; }
 }
