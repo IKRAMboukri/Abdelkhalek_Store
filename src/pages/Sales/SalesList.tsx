@@ -18,6 +18,7 @@ import { saleService } from '@/services'
 import { useToast } from '@/hooks/useToast'
 import { useLocale } from '@/hooks/useLocale'
 import { PAGINATION_DEFAULTS } from '@/constants'
+import { useDebounce } from '@/hooks/useDebounce'
 
 export function SalesList() {
   const navigate = useNavigate()
@@ -63,13 +64,14 @@ export function SalesList() {
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const debouncedSearch = useDebounce(search, 300)
 
   const fetchSales = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
       const result: PaginatedResult<Sale> = await saleService.getSales({
-        search,
+        search: debouncedSearch,
         status: statusFilter,
         category: paymentFilter,
         sortBy: 'createdAt',
@@ -85,7 +87,7 @@ export function SalesList() {
     } finally {
       setLoading(false)
     }
-  }, [search, statusFilter, paymentFilter, page, limit])
+  }, [debouncedSearch, statusFilter, paymentFilter, page, limit, t])
 
   useEffect(() => {
     fetchSales()

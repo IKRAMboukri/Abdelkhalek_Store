@@ -21,6 +21,7 @@ import { useLocale } from '@/hooks/useLocale'
 import { PAGINATION_DEFAULTS } from '@/constants'
 import type { Credit, FilterOptions, CreditPayment } from '@/types'
 import clsx from 'clsx'
+import { useDebounce } from '@/hooks/useDebounce'
 
 function getDueDateColor(dueDate: string): string {
   const now = new Date().getTime()
@@ -73,13 +74,14 @@ export function CreditList() {
   const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0])
   const [paymentNotes, setPaymentNotes] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const debouncedSearch = useDebounce(search, 300)
 
   const fetchCredits = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
       const options: FilterOptions = {
-        search,
+        search: debouncedSearch,
         status,
         page,
         limit,
@@ -96,7 +98,7 @@ export function CreditList() {
     } finally {
       setLoading(false)
     }
-  }, [search, status, page, limit])
+  }, [debouncedSearch, status, page, limit, t])
 
   useEffect(() => {
     fetchCredits()

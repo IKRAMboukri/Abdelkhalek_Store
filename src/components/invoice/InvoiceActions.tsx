@@ -2,8 +2,6 @@ import { type RefObject } from 'react'
 import { Printer, Download } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 import { useLocale } from '@/hooks/useLocale'
-import jsPDF from 'jspdf'
-import html2canvas from 'html2canvas'
 
 interface InvoiceActionsProps {
   invoiceRef: RefObject<HTMLDivElement | null>
@@ -21,6 +19,13 @@ export function InvoiceActions({ invoiceRef }: InvoiceActionsProps) {
   const handleDownloadPdf = async () => {
     const element = invoiceRef.current
     if (!element) return
+
+    // PDF generation is the heaviest optional feature in the app. Load it
+    // only when the user actually asks for a download.
+    const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
+      import('html2canvas'),
+      import('jspdf'),
+    ])
 
     const canvas = await html2canvas(element, {
       scale: 2,

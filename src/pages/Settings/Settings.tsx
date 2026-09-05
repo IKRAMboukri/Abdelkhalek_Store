@@ -19,6 +19,7 @@ import { useToast } from '@/hooks/useToast'
 import { useLocale } from '@/hooks/useLocale'
 import { CURRENCY_OPTIONS, DATE_FORMAT_OPTIONS } from '@/constants'
 import { resolveMediaUrl } from '@/utils/helpers'
+import { optimizeRasterImage } from '@/utils/image'
 import clsx from 'clsx'
 
 const LANG_OPTIONS = [
@@ -121,7 +122,8 @@ export function Settings() {
     }
     setUploadingLogo(true)
     try {
-      const updated = await settingsService.uploadLogo(file)
+      const optimizedFile = await optimizeRasterImage(file, 512, 0.86)
+      const updated = await settingsService.uploadLogo(optimizedFile)
       setStoreSettings(updated)
       showToast('success', t('settings.logoUploaded'))
     } catch (err) {
@@ -374,6 +376,10 @@ export function Settings() {
                           <img
                             src={resolveLogoUrl(storeSettings.logo)}
                             alt={t('settings.logoLabel')}
+                            width="80"
+                            height="80"
+                            loading="lazy"
+                            decoding="async"
                             className="w-full h-full object-contain"
                             onError={(e) => {
                               ;(e.target as HTMLImageElement).style.display = 'none'

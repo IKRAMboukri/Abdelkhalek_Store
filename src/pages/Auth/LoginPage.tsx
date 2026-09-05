@@ -56,6 +56,10 @@ export default function LoginPage() {
             <img
               src="/abdelkhalek-logo.jpeg"
               alt={t('app.name')}
+              width="80"
+              height="80"
+              decoding="async"
+              fetchPriority="high"
               className="w-full h-full object-contain"
             />
           </div>

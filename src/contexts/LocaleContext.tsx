@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react'
+import { createContext, useContext, useState, useCallback, useEffect, useMemo, type ReactNode } from 'react'
 import { en } from '@/translations/en'
 import { ar } from '@/translations/ar'
 import { fr } from '@/translations/fr'
@@ -62,8 +62,13 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     document.documentElement.lang = locale
   }, [dir, locale])
 
+  const value = useMemo(
+    () => ({ locale, setLocale, t, dir, isRTL }),
+    [locale, setLocale, t, dir, isRTL],
+  )
+
   return (
-    <LocaleContext.Provider value={{ locale, setLocale, t, dir, isRTL }}>
+    <LocaleContext.Provider value={value}>
       {children}
     </LocaleContext.Provider>
   )

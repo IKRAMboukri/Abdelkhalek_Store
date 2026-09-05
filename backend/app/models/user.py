@@ -23,12 +23,16 @@ class StoreSettings(Base):
     __tablename__ = "store_settings"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    store_name: Mapped[str] = mapped_column(String(200), nullable=False, default="Abdelkhalek_Store")
+    store_name: Mapped[str] = mapped_column(
+        String(200), nullable=False, default="Abdelkhalek_Store"
+    )
     store_email: Mapped[str] = mapped_column(
         String(200), nullable=False, default="abdelkhalekboukri668@gmail.com"
     )
     store_phone: Mapped[str] = mapped_column(String(50), nullable=False, default="0723312525")
-    store_address: Mapped[str] = mapped_column(Text, nullable=False, default="Casablanca, Sidi Maarouf, Hay Sacem")
+    store_address: Mapped[str] = mapped_column(
+        Text, nullable=False, default="Casablanca, Sidi Maarouf, Hay Sacem"
+    )
     currency: Mapped[str] = mapped_column(String(10), nullable=False, default="MAD")
     currency_symbol: Mapped[str] = mapped_column(String(10), nullable=False, default="DH")
     logo: Mapped[str] = mapped_column(Text, nullable=False, default="")

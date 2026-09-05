@@ -6,6 +6,7 @@ import { Button, Card, Modal, Table, Pagination, FilterBar, EmptyState, StatusBa
 import type { TableColumn, FilterConfig } from '@/components/ui'
 import { productService, categoryService } from '@/services'
 import { useToast } from '@/hooks'
+import { useDebounce } from '@/hooks/useDebounce'
 import type { Product, Category, FilterOptions } from '@/types'
 import { PAGINATION_DEFAULTS } from '@/constants'
 import { resolveMediaUrl } from '@/utils/helpers'
@@ -46,12 +47,21 @@ export function ProductList() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null)
   const [submitting, setSubmitting] = useState(false)
+  const debouncedSearch = useDebounce(filters.search, 300)
 
   const loadProducts = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
-      const result = await productService.getProducts(filters)
+      const result = await productService.getProducts({
+        search: debouncedSearch,
+        status: filters.status,
+        category: filters.category,
+        sortBy: filters.sortBy,
+        sortOrder: filters.sortOrder,
+        page: filters.page,
+        limit: filters.limit,
+      })
       setProducts(result.data)
       setTotal(result.total)
       setTotalPages(result.totalPages)
@@ -60,7 +70,7 @@ export function ProductList() {
     } finally {
       setLoading(false)
     }
-  }, [filters])
+  }, [debouncedSearch, filters.status, filters.category, filters.sortBy, filters.sortOrder, filters.page, filters.limit, t])
 
   const loadCategories = useCallback(async () => {
     try {
@@ -312,6 +322,10 @@ function ProductThumbnail({ src, alt }: { src?: string; alt: string }) {
     <img
       src={resolvedSrc}
       alt={alt}
+      width="48"
+      height="48"
+      loading="lazy"
+      decoding="async"
       className="w-12 h-12 rounded-xl object-cover shrink-0"
       onError={() => setImgError(true)}
     />

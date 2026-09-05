@@ -13,10 +13,13 @@ def _normalize_database_url(url: str) -> str:
     installed; pin it to the pure-Python ``psycopg`` v3 driver we ship instead,
     and accept the legacy ``postgres://`` scheme.
     """
-    if url.startswith("postgres://") or url.startswith("postgresql://"):
-        if "://" in url and not url.startswith("postgresql+psycopg://"):
-            base = url.split("://", 1)[1]
-            return f"postgresql+psycopg://{base}"
+    if (
+        (url.startswith("postgres://") or url.startswith("postgresql://"))
+        and "://" in url
+        and not url.startswith("postgresql+psycopg://")
+    ):
+        base = url.split("://", 1)[1]
+        return f"postgresql+psycopg://{base}"
     return url
 
 

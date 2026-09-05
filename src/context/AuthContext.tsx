@@ -66,7 +66,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // 2. Clear the service-worker API cache so stale authenticated responses
     //    are never served after logout.
     if ('caches' in window) {
-      caches.delete('api-cache').catch(() => {})
+      Promise.all([
+        caches.delete('api-cache'),
+        caches.delete('stable-api-cache'),
+      ]).catch(() => {})
     }
 
     // 3. Best-effort: notify the server in the background (fire-and-forget).

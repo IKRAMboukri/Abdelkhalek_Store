@@ -35,6 +35,7 @@ class FilterParams(BaseModel):
     search: str = ""
     status: str = ""
     category: str = ""
+    customerId: int | None = None
     sortBy: str = ""
     sortOrder: str = "desc"
     page: int = Field(default=1, ge=1)

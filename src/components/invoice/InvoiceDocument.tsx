@@ -22,6 +22,9 @@ export function InvoiceDocument({ invoice, className }: InvoiceDocumentProps) {
             <img
               src="/abdelkhalek-logo.jpeg"
               alt={invoice.storeName}
+              width="48"
+              height="48"
+              decoding="async"
               className="w-full h-full object-contain"
             />
           </div>

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
 import { Header } from './Header'
@@ -7,17 +7,20 @@ import clsx from 'clsx'
 export default function Layout() {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const toggleSidebar = useCallback(() => setCollapsed((value) => !value), [])
+  const openMobileMenu = useCallback(() => setMobileOpen(true), [])
+  const closeMobileMenu = useCallback(() => setMobileOpen(false), [])
 
   return (
     <div className="flex h-screen bg-surface-secondary">
       <Sidebar
         collapsed={collapsed}
-        onToggle={() => setCollapsed(!collapsed)}
+        onToggle={toggleSidebar}
         mobileOpen={mobileOpen}
-        onMobileClose={() => setMobileOpen(false)}
+        onMobileClose={closeMobileMenu}
       />
       <div className="flex flex-col flex-1 min-w-0">
-        <Header onMenuClick={() => setMobileOpen(true)} />
+        <Header onMenuClick={openMobileMenu} />
         <main
           className={clsx(
             'flex-1 overflow-auto p-4 lg:p-6',

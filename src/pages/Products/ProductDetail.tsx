@@ -25,6 +25,8 @@ function ProductImage({ src, alt, className = '' }: { src?: string; alt: string;
     <img
       src={resolvedSrc}
       alt={alt}
+      decoding="async"
+      fetchPriority="high"
       className={`object-cover ${className}`}
       onError={() => setImgError(true)}
     />

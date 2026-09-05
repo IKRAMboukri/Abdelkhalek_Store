@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
@@ -29,7 +29,7 @@ interface SidebarProps {
   onMobileClose: () => void
 }
 
-export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: SidebarProps) {
+export const Sidebar = memo(function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: SidebarProps) {
   const location = useLocation()
   const navigate = useNavigate()
   const { t, locale } = useLocale()
@@ -146,6 +146,9 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
             <img
               src="/abdelkhalek-logo.jpeg"
               alt={settings?.storeName || t('app.name')}
+              width="40"
+              height="40"
+              decoding="async"
               className="w-full h-full object-contain"
             />
           </div>
@@ -191,4 +194,4 @@ export function Sidebar({ collapsed, onToggle, mobileOpen, onMobileClose }: Side
       )}
     </>
   )
-}
+})

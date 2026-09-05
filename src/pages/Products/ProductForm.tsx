@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { useLocale } from '@/hooks/useLocale'
 import type { Product, SelectOption, Category } from '@/types'
 import { categoryService } from '@/services'
+import { optimizeRasterImage } from '@/utils/image'
 import { Button, Input, Select, Textarea } from '@/components/ui'
 import { CategorySelector } from '@/components/products/CategorySelector'
 import { Package, DollarSign, FileText, Tag, ArrowLeft, CheckCircle2, Upload, X } from 'lucide-react'
@@ -137,18 +138,19 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
 
   const acceptedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/bmp', 'image/tiff', 'application/pdf']
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
     if (!acceptedTypes.includes(file.type)) return
 
-    setImageFileName(file.name)
+    const optimizedFile = await optimizeRasterImage(file, 1600)
+    setImageFileName(optimizedFile.name)
     const reader = new FileReader()
     reader.onload = () => {
       const result = reader.result as string
       setFormData(prev => ({ ...prev, image: result }))
     }
-    reader.readAsDataURL(file)
+    reader.readAsDataURL(optimizedFile)
   }
 
   function handleRemoveImage() {
@@ -307,7 +309,7 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
             ref={fileInputRef}
             type="file"
             accept=".jpg,.jpeg,.png,.webp,.gif,.svg,.bmp,.tiff,.pdf,image/jpeg,image/png,image/webp,image/gif,image/svg+xml,image/bmp,image/tiff,application/pdf"
-            onChange={handleFileChange}
+            onChange={(event) => void handleFileChange(event)}
             className="hidden"
             disabled={loading}
           />
@@ -316,7 +318,7 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
               {formData.image.startsWith('data:application/pdf') ? (
                 <FileText size={16} className="text-red-500 shrink-0" />
               ) : (
-                <img src={formData.image} alt="" className="h-8 w-8 rounded-lg object-cover shrink-0" />
+                <img src={formData.image} alt="" width="32" height="32" loading="lazy" decoding="async" className="h-8 w-8 rounded-lg object-cover shrink-0" />
               )}
               <span className="flex-1 text-sm text-gray-900 truncate">{imageFileName || 'document'}</span>
               <span className="text-xs text-gray-400 shrink-0">{formData.image.startsWith('data:application/pdf') ? 'PDF' : 'Image'}</span>

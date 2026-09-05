@@ -20,7 +20,6 @@ export class CategoryService implements ICategoryService {
     const raw = await post<RawCategory>(BASE, {
       name: category.name,
       description: category.description ?? '',
-      image: category.image ?? '',
     });
     return mapCategory(raw);
   }
@@ -29,7 +28,6 @@ export class CategoryService implements ICategoryService {
     const payload: Record<string, unknown> = {};
     if (category.name !== undefined) payload.name = category.name;
     if (category.description !== undefined) payload.description = category.description;
-    if (category.image !== undefined) payload.image = category.image;
     const raw = await put<RawCategory>(`${BASE}/${id}`, payload);
     return raw ? mapCategory(raw) : null;
   }

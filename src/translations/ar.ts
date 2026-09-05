@@ -85,6 +85,7 @@ export const ar = {
     noDescription: 'لا يوجد وصف.',
     productDetails: 'تفاصيل المنتج',
     relatedProducts: 'منتجات ذات صلة',
+    products: 'منتجات',
     price: 'السعر',
     quantity: 'الكمية',
     unit: 'الوحدة',

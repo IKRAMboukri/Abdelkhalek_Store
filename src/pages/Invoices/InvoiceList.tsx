@@ -5,6 +5,7 @@ import { Card, Table, type TableColumn, Pagination, SearchBar, FilterBar, type F
 import { invoiceService } from '@/services'
 import { useLocale } from '@/hooks/useLocale'
 import { PAGINATION_DEFAULTS } from '@/constants'
+import { useDebounce } from '@/hooks/useDebounce'
 
 export function InvoiceList() {
   const navigate = useNavigate()
@@ -43,13 +44,14 @@ export function InvoiceList() {
   const [statusFilter, setStatusFilter] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const debouncedSearch = useDebounce(search, 300)
 
   const fetchInvoices = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
       const opts: FilterOptions = {
-        search,
+        search: debouncedSearch,
         status: statusFilter,
         category: paymentFilter,
         sortBy: 'createdAt',
@@ -66,7 +68,7 @@ export function InvoiceList() {
     } finally {
       setLoading(false)
     }
-  }, [search, statusFilter, paymentFilter, page, limit])
+  }, [debouncedSearch, statusFilter, paymentFilter, page, limit, t])
 
   useEffect(() => { fetchInvoices() }, [fetchInvoices])
 

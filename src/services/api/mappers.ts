@@ -141,7 +141,6 @@ export function mapCategory(raw: RawCategory): Category {
     name: raw.name,
     description: raw.description,
     productCount: raw.productCount,
-    image: raw.image,
     createdAt: raw.createdAt,
     subcategories: raw.subcategories ? raw.subcategories.map(mapSubCategory) : undefined,
   };

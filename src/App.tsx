@@ -1,31 +1,42 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { ToastProvider } from '@/components/ui/Toast'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { AuthProvider } from '@/context/AuthContext'
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute'
 import Layout from '@/components/layout/Layout'
-import LoginPage from '@/pages/Auth/LoginPage'
-import { Dashboard } from '@/pages/Dashboard'
-import { ProductList } from '@/pages/Products/ProductList'
-import { AddProduct } from '@/pages/Products/AddProduct'
-import { ProductDetail } from '@/pages/Products/ProductDetail'
-import { CategoryList } from '@/pages/Categories/CategoryList'
-import { CustomerList } from '@/pages/Customers/CustomerList'
-import { CustomerDetail } from '@/pages/Customers/CustomerDetail'
-import { SalesList } from '@/pages/Sales/SalesList'
-import { NewSale } from '@/pages/Sales/NewSale'
-import { InvoiceList } from '@/pages/Invoices/InvoiceList'
-import { InvoiceDetail } from '@/pages/Invoices/InvoiceDetail'
-import { CreditList } from '@/pages/Credits/CreditList'
-import { CreditDetail } from '@/pages/Credits/CreditDetail'
-import { CreditManage } from '@/pages/Credits/CreditManage'
-import { Settings } from '@/pages/Settings/Settings'
+
+const LoginPage = lazy(() => import('@/pages/Auth/LoginPage'))
+const Dashboard = lazy(() => import('@/pages/Dashboard').then((module) => ({ default: module.Dashboard })))
+const ProductList = lazy(() => import('@/pages/Products/ProductList').then((module) => ({ default: module.ProductList })))
+const AddProduct = lazy(() => import('@/pages/Products/AddProduct').then((module) => ({ default: module.AddProduct })))
+const ProductDetail = lazy(() => import('@/pages/Products/ProductDetail').then((module) => ({ default: module.ProductDetail })))
+const CategoryList = lazy(() => import('@/pages/Categories/CategoryList').then((module) => ({ default: module.CategoryList })))
+const CustomerList = lazy(() => import('@/pages/Customers/CustomerList').then((module) => ({ default: module.CustomerList })))
+const CustomerDetail = lazy(() => import('@/pages/Customers/CustomerDetail').then((module) => ({ default: module.CustomerDetail })))
+const SalesList = lazy(() => import('@/pages/Sales/SalesList').then((module) => ({ default: module.SalesList })))
+const NewSale = lazy(() => import('@/pages/Sales/NewSale').then((module) => ({ default: module.NewSale })))
+const InvoiceList = lazy(() => import('@/pages/Invoices/InvoiceList').then((module) => ({ default: module.InvoiceList })))
+const InvoiceDetail = lazy(() => import('@/pages/Invoices/InvoiceDetail').then((module) => ({ default: module.InvoiceDetail })))
+const CreditList = lazy(() => import('@/pages/Credits/CreditList').then((module) => ({ default: module.CreditList })))
+const CreditDetail = lazy(() => import('@/pages/Credits/CreditDetail').then((module) => ({ default: module.CreditDetail })))
+const CreditManage = lazy(() => import('@/pages/Credits/CreditManage').then((module) => ({ default: module.CreditManage })))
+const Settings = lazy(() => import('@/pages/Settings/Settings').then((module) => ({ default: module.Settings })))
+
+function RouteFallback() {
+  return (
+    <div className="flex min-h-48 items-center justify-center" role="status" aria-label="Loading">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-200 border-t-primary-600" />
+    </div>
+  )
+}
 
 function AppRoutes() {
   const location = useLocation()
   return (
     <ErrorBoundary key={location.pathname}>
-      <Routes>
+      <Suspense fallback={<RouteFallback />}>
+        <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route
           element={
@@ -51,7 +62,8 @@ function AppRoutes() {
           <Route path="/credits/:id" element={<CreditDetail />} />
           <Route path="/settings" element={<Settings />} />
         </Route>
-      </Routes>
+        </Routes>
+      </Suspense>
     </ErrorBoundary>
   )
 }

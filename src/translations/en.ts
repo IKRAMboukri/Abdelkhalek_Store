@@ -85,6 +85,7 @@ export const en = {
     noDescription: 'No description provided.',
     productDetails: 'Product Details',
     relatedProducts: 'Related Products',
+    products: 'products',
     price: 'Price',
     quantity: 'Quantity',
     unit: 'Unit',

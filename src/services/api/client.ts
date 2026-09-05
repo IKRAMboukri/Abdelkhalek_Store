@@ -13,15 +13,38 @@ export class ApiError extends Error {
 
 const TOKEN_KEY = 'furniture_admin_token';
 
+interface CacheEntry {
+  expiresAt: number;
+  value: unknown;
+}
+
+const responseCache = new Map<string, CacheEntry>();
+const inFlightGets = new Map<string, Promise<unknown>>();
+let cacheGeneration = 0;
+
+function clearApiCache(): void {
+  responseCache.clear();
+  inFlightGets.clear();
+  cacheGeneration += 1;
+}
+
+function getCacheTtl(path: string): number {
+  if (path === '/api/v1/settings' || path === '/api/v1/categories/all') return 5 * 60_000;
+  if (path === '/api/v1/products/all' || path === '/api/v1/customers/all') return 60_000;
+  return 0;
+}
+
 export function getStoredToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
 
 export function setStoredToken(token: string): void {
+  clearApiCache();
   localStorage.setItem(TOKEN_KEY, token);
 }
 
 export function clearStoredToken(): void {
+  clearApiCache();
   localStorage.removeItem(TOKEN_KEY);
 }
 
@@ -31,7 +54,7 @@ export const AUTH_UNAUTHORIZED_EVENT = 'auth:unauthorized';
 
 type Json = Record<string, unknown> | unknown[] | string | number | boolean | null;
 
-export async function apiRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
+async function executeRequest<T>(path: string, options: RequestInit): Promise<T> {
   const headers: Record<string, string> = {
     Accept: 'application/json',
   };
@@ -70,6 +93,42 @@ export async function apiRequest<T>(path: string, options: RequestInit = {}): Pr
     throw new ApiError(response.status, detail);
   }
   return data as T;
+}
+
+export function apiRequest<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const method = (options.method ?? 'GET').toUpperCase();
+  if (method !== 'GET') {
+    // Mutations can affect list counts, dashboard totals, and lookup data.
+    clearApiCache();
+    return executeRequest<T>(path, options);
+  }
+
+  const token = getStoredToken() ?? 'anonymous';
+  const cacheKey = `${token}:${path}`;
+  const cached = responseCache.get(cacheKey);
+  if (cached && cached.expiresAt > Date.now()) {
+    return Promise.resolve(cached.value as T);
+  }
+  if (cached) responseCache.delete(cacheKey);
+
+  const pending = inFlightGets.get(cacheKey);
+  if (pending) return pending as Promise<T>;
+
+  const generation = cacheGeneration;
+  const request = executeRequest<T>(path, options)
+    .then((value) => {
+      const ttl = getCacheTtl(path);
+      if (ttl > 0 && generation === cacheGeneration) {
+        responseCache.set(cacheKey, { value, expiresAt: Date.now() + ttl });
+      }
+      return value;
+    })
+    .finally(() => {
+      if (inFlightGets.get(cacheKey) === request) inFlightGets.delete(cacheKey);
+    });
+
+  inFlightGets.set(cacheKey, request);
+  return request;
 }
 
 export function get<T>(path: string): Promise<T> {

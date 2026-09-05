@@ -19,6 +19,7 @@ import { customerService } from '@/services'
 import { useToast } from '@/hooks/useToast'
 import { useLocale } from '@/hooks/useLocale'
 import { PAGINATION_DEFAULTS } from '@/constants'
+import { useDebounce } from '@/hooks/useDebounce'
 
 export function CustomerList() {
   const navigate = useNavigate()
@@ -40,6 +41,7 @@ export function CustomerList() {
 
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const debouncedSearch = useDebounce(search, 300)
 
   const statusFilterConfig: FilterConfig[] = [
     {
@@ -59,7 +61,7 @@ export function CustomerList() {
     setError(null)
     try {
       const result: PaginatedResult<Customer> = await customerService.getCustomers({
-        search,
+        search: debouncedSearch,
         status: statusFilter,
         category: '',
         sortBy: 'createdAt',
@@ -75,7 +77,7 @@ export function CustomerList() {
     } finally {
       setLoading(false)
     }
-  }, [search, statusFilter, page, limit])
+  }, [debouncedSearch, statusFilter, page, limit, t])
 
   useEffect(() => {
     fetchCustomers()

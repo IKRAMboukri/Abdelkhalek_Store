@@ -36,23 +36,52 @@ export default defineConfig({
         ],
       },
       workbox: {
+        cleanupOutdatedCaches: true,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,woff2}'],
+        globIgnores: [
+          '**/html2canvas-*.js',
+          '**/jspdf*.js',
+          '**/purify.es-*.js',
+          '**/index.es-*.js',
+        ],
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/api\//],
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/.*\.onrender\.com\/api\/.*/i,
-            handler: 'NetworkFirst',
+            urlPattern: ({ url, request }) =>
+              request.method === 'GET' && url.pathname === '/api/v1/settings',
+            handler: 'StaleWhileRevalidate',
             options: {
-              cacheName: 'api-cache',
+              cacheName: 'stable-api-cache',
               expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 5 * 60,
+                maxEntries: 5,
+                maxAgeSeconds: 60 * 60,
               },
-              networkTimeoutSeconds: 10,
-              cacheableResponse: {
-                statuses: [0, 200],
+            },
+          },
+          {
+            urlPattern: ({ request }) => request.destination === 'image',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'image-cache',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 30 * 24 * 60 * 60,
               },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            urlPattern: ({ request, sameOrigin }) =>
+              request.destination === 'script' && sameOrigin,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'route-chunk-cache',
+              expiration: {
+                maxEntries: 75,
+                maxAgeSeconds: 30 * 24 * 60 * 60,
+              },
+              cacheableResponse: { statuses: [200] },
             },
           },
         ],
@@ -63,5 +92,10 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     },
+  },
+  build: {
+    target: 'es2020',
+    cssCodeSplit: true,
+    sourcemap: false,
   },
 })

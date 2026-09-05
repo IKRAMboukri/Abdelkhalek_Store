@@ -31,6 +31,8 @@ class CreditRepository(BaseRepository):
     def _apply_filters(self, query, params: FilterParams):
         if params.status:
             query = query.where(Credit.status == params.status)
+        if params.customerId is not None:
+            query = query.where(Credit.customer_id == params.customerId)
         return query
 
     def _apply_sort(self, query, sort_by: str, sort_order: str):

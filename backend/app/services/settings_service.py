@@ -6,7 +6,6 @@ from app.models import StoreSettings
 from app.repositories.misc import StoreSettingsRepository
 from app.schemas.settings import StoreSettingsUpdate
 
-
 _CAMEL_TO_SNAKE = re.compile(r"(?<!^)(?=[A-Z])")
 
 

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { memo, useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Menu,
@@ -19,7 +19,7 @@ interface HeaderProps {
   unreadNotifications?: number
 }
 
-export function Header({
+export const Header = memo(function Header({
   onMenuClick,
   unreadNotifications = 0,
 }: HeaderProps) {
@@ -144,7 +144,7 @@ export function Header({
             >
               <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900 flex items-center justify-center text-primary-700 dark:text-primary-300 font-semibold text-sm shrink-0 overflow-hidden">
                 {user?.avatar ? (
-                  <img src={resolveMediaUrl(user.avatar)} alt="" className="w-full h-full object-cover" />
+                  <img src={resolveMediaUrl(user.avatar)} alt="" width="32" height="32" loading="lazy" decoding="async" className="w-full h-full object-cover" />
                 ) : (
                   (user?.name ?? 'A').charAt(0).toUpperCase()
                 )}
@@ -191,4 +191,4 @@ export function Header({
       </div>
     </header>
   )
-}
+})

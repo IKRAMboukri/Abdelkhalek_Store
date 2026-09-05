@@ -37,7 +37,6 @@ export interface Category {
   name: string;
   description: string;
   productCount: number;
-  image?: string;
   createdAt: string;
   subcategories?: SubCategory[];
 }
@@ -205,6 +204,7 @@ export interface FilterOptions {
   sortOrder: 'asc' | 'desc';
   page: number;
   limit: number;
+  customerId?: string;
 }
 
 export interface PaginatedResult<T> {

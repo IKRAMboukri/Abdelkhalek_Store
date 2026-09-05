@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { Plus, Pencil, Trash2, ImageOff, Package } from 'lucide-react'
+import { Plus, Pencil, Trash2, Package } from 'lucide-react'
 import { categoryService } from '@/services'
 import { useToast } from '@/hooks'
 import { useLocale } from '@/hooks/useLocale'
@@ -17,7 +17,7 @@ import { EmptyState } from '@/components/ui/EmptyState'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { PAGINATION_DEFAULTS } from '@/constants'
-import { resolveMediaUrl } from '@/utils/helpers'
+import { useDebounce } from '@/hooks/useDebounce'
 
 interface CategoryFormData {
   name: string
@@ -50,12 +50,13 @@ export function CategoryList() {
   const [saving, setSaving] = useState(false)
 
   const [deleteConfirm, setDeleteConfirm] = useState<Category | null>(null)
+  const debouncedSearch = useDebounce(search, 300)
 
   const fetchCategories = useCallback(async () => {
     setLoading(true)
     try {
       const options: FilterOptions = {
-        search,
+        search: debouncedSearch,
         page,
         limit,
         sortBy: 'createdAt',
@@ -70,7 +71,7 @@ export function CategoryList() {
     } finally {
       setLoading(false)
     }
-  }, [search, page, limit, addToast])
+  }, [debouncedSearch, page, limit, addToast, t])
 
   const loadAllCategories = useCallback(async () => {
     try {
@@ -170,7 +171,6 @@ export function CategoryList() {
   function renderSkeletons() {
     return Array.from({ length: 6 }).map((_, i) => (
       <Card key={i} className="animate-pulse" padding={false}>
-        <Skeleton variant="rectangular" height="160" className="rounded-t-xl" />
         <div className="p-4 space-y-3">
           <Skeleton variant="text" width="70%" />
           <Skeleton variant="text" count={2} />
@@ -224,55 +224,32 @@ export function CategoryList() {
         ) : (
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {data.data.map((category) => (
-                <Card key={category.id} padding={false} className="overflow-hidden group">
-                  <div className="relative h-40 bg-gray-100 dark:bg-gray-800">
-                    {category.image ? (
-                      <img
-                        src={resolveMediaUrl(category.image)}
-                        alt={category.name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          const target = e.currentTarget
-                          target.style.display = 'none'
-                          const parent = target.parentElement
-                          if (parent) {
-                            const fallback = parent.querySelector('[data-fallback]') as HTMLElement
-                            if (fallback) fallback.style.display = 'flex'
-                          }
-                        }}
-                      />
-                    ) : null}
-                    <div
-                      data-fallback
-                      className="absolute inset-0 flex items-center justify-center text-gray-400"
-                      style={{ display: category.image ? 'none' : 'flex' }}
-                    >
-                      <ImageOff size={40} />
-                    </div>
-                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        icon={<Pencil size={14} />}
-                        onClick={() => handleOpenEdit(category)}
-                      />
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        icon={<Trash2 size={14} />}
-                        onClick={() => setDeleteConfirm(category)}
-                      />
-                    </div>
-                  </div>
+{data.data.map((category) => (
+                <Card key={category.id} padding={false} className="group">
                   <div className="p-4">
                     <div className="flex items-start justify-between gap-2 mb-1">
                       <h3 className="text-base font-semibold text-text-primary truncate" translate="no">
                         {category.name}
                       </h3>
-                      <Badge variant="info" size="sm">
-                        {category.productCount} {t('common.products')}
-                      </Badge>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Badge variant="info" size="sm">
+                          {category.productCount} {t('common.products')}
+                        </Badge>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            icon={<Pencil size={14} />}
+                            onClick={() => handleOpenEdit(category)}
+                          />
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            icon={<Trash2 size={14} />}
+                            onClick={() => setDeleteConfirm(category)}
+                          />
+                        </div>
+                      </div>
                     </div>
                     <p className="text-sm text-text-muted leading-relaxed">
                       {truncate(category.description, 100)}

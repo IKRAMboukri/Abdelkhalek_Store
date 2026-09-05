@@ -16,6 +16,7 @@ import { customerService, creditService } from '@/services'
 import { useToast } from '@/hooks/useToast'
 import { useLocale } from '@/hooks/useLocale'
 import { PAGINATION_DEFAULTS } from '@/constants'
+import { Pagination } from '@/components/ui/Pagination'
 
 export function CreditManage() {
   const navigate = useNavigate()
@@ -31,9 +32,11 @@ export function CreditManage() {
   const [credits, setCredits] = useState<Credit[]>([])
   const [loadingCredits, setLoadingCredits] = useState(false)
   const [creditsError, setCreditsError] = useState<string | null>(null)
+  const [total, setTotal] = useState(0)
+  const [totalPages, setTotalPages] = useState(0)
 
   const [page, setPage] = useState(1)
-  const [limit] = useState(PAGINATION_DEFAULTS.pageSize)
+  const [limit, setLimit] = useState<number>(PAGINATION_DEFAULTS.pageSize)
 
   const [createModalOpen, setCreateModalOpen] = useState(false)
   const [initialAmount, setInitialAmount] = useState('')
@@ -108,15 +111,17 @@ export function CreditManage() {
         sortOrder: 'desc',
         page,
         limit,
+        customerId: selectedCustomer.id,
       })
-      const customerCredits = result.data.filter(c => c.customerId === selectedCustomer.id)
-      setCredits(customerCredits)
+      setCredits(result.data)
+      setTotal(result.total)
+      setTotalPages(result.totalPages)
     } catch {
       setCreditsError(t('errors.loadError'))
     } finally {
       setLoadingCredits(false)
     }
-  }, [selectedCustomer, page, limit])
+  }, [selectedCustomer, page, limit, t])
 
   useEffect(() => {
     fetchCredits()
@@ -133,6 +138,8 @@ export function CreditManage() {
     setSelectedCustomer(null)
     setSearchQuery('')
     setCredits([])
+    setTotal(0)
+    setTotalPages(0)
     setPage(1)
   }
 
@@ -432,12 +439,25 @@ export function CreditManage() {
             action={{ label: t('common.retry'), onClick: fetchCredits }}
           />
         ) : (
-          <Table<Credit>
-            columns={creditColumns}
-            data={credits}
-            loading={loadingCredits}
-            emptyMessage={t('credits.noCredits')}
-          />
+          <>
+            <Table<Credit>
+              columns={creditColumns}
+              data={credits}
+              loading={loadingCredits}
+              emptyMessage={t('credits.noCredits')}
+            />
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              total={total}
+              limit={limit}
+              onPageChange={setPage}
+              onLimitChange={(nextLimit) => {
+                setLimit(nextLimit)
+                setPage(1)
+              }}
+            />
+          </>
         )}
       </Card>
     )

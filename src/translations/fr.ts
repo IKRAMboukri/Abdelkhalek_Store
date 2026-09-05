@@ -85,6 +85,7 @@ export const fr = {
     noDescription: 'Aucune description fournie.',
     productDetails: 'Détails du Produit',
     relatedProducts: 'Produits Associés',
+    products: 'produits',
     price: 'Prix',
     quantity: 'Quantité',
     unit: 'Unité',
