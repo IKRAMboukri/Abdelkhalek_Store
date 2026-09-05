@@ -256,25 +256,88 @@ main::-webkit-scrollbar {
   animation: slideInFromLeft 0.2s ease-out;
 }
 
+@page {
+  size: auto;
+  margin: 6mm;
+}
+
 @media print {
-  body * {
-    visibility: hidden;
-  }
-  .no-print,
-  .no-print * {
+  /* ---- Hide the app shell (everything that is NOT the invoice portal) ---- */
+  body > :not(.fixed) {
     display: none !important;
   }
+
+  /* Hide the modal chrome (title bar, close X, footer buttons, backdrop)
+     while keeping the inner invoice visible.  The portal overlay
+     (.fixed.inset-0…) is the only direct child of body that starts with
+     "fixed", so body > :not(.fixed) correctly hides the app root. */
+  .fixed.inset-0 > .fixed.inset-0 { display: none !important; }
+  .fixed.inset-0 > .relative        { visibility: hidden !important; }
+
+  /* Make the invoice + every child visible & rendered */
   .invoice-printable,
   .invoice-printable * {
-    visibility: visible;
+    visibility: visible !important;
+    display: revert !important;
   }
+
+  /* ---- Place a narrow receipt block at the top-centre of the page ---- */
   .invoice-printable {
-    position: absolute;
-    left: 0;
+    position: fixed !important;
     top: 0;
-    width: 100%;
-    max-width: 210mm;
-    padding: 10mm;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 130mm;
+    margin: 0;
+    padding: 8px 10px;
+    border-radius: 0;
     background: white;
+    box-shadow: none;
+    border: none;
+    color: #000;
+    line-height: 1.25;
   }
+
+  /* ---- Compact inner layout (print only) ---- */
+
+  /* header */
+  .invoice-printable .flex.items-start.justify-between {
+    gap: 6px;
+    padding-bottom: 4px !important;
+    margin-bottom: 4px !important;
+  }
+  .invoice-printable h1 { font-size: 12px !important; margin: 0 !important; }
+  .invoice-printable > div:first-child > div:first-child .text-\[11px\] { font-size: 8px !important; }
+  .invoice-printable h2 { font-size: 13px !important; margin: 0 !important; }
+  .invoice-printable > div:first-child > div:last-child .text-xs { font-size: 8px !important; }
+
+  /* logo */
+  .invoice-printable img { width: 32px !important; height: 32px !important; }
+
+  /* bill-to */
+  .invoice-printable .mb-2 { margin-bottom: 3px !important; }
+  .invoice-printable .p-2  { padding: 4px 6px !important; }
+  .invoice-printable .text-\[11px\] { font-size: 8px !important; }
+  .invoice-printable .font-semibold { font-size: 10px !important; }
+  .invoice-printable .text-sm       { font-size: 9px  !important; }
+
+  /* table */
+  .invoice-printable table { font-size: 9px !important; }
+  .invoice-printable thead th {
+    font-size: 8px !important;
+    padding: 2px !important;
+  }
+  .invoice-printable tbody td {
+    font-size: 9px !important;
+    padding: 1px 2px !important;
+  }
+
+  /* totals */
+  .invoice-printable .w-52 { width: 96px !important; }
+  .invoice-printable .space-y-0\.5 { gap: 0 !important; }
+
+  /* payment-info & footer */
+  .invoice-printable .border-t-2   { margin-top: 4px !important; padding-top: 4px !important; }
+  .invoice-printable .border-t-2 + div { font-size: 9px !important; }
+  .invoice-printable .text-center  { font-size: 9px !important; padding-top: 4px !important; margin-top: 2px !important; }
 }
