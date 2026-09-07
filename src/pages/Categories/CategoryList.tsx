@@ -7,15 +7,15 @@ import type { Category, FilterOptions, PaginatedResult } from '@/types'
 
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
+import { Table } from '@/components/ui/Table'
+import type { TableColumn } from '@/components/ui/Table'
 import { Modal } from '@/components/ui/Modal'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
-import { Badge } from '@/components/ui/Badge'
 import { SearchBar } from '@/components/ui/SearchBar'
 import { Pagination } from '@/components/ui/Pagination'
 import { EmptyState } from '@/components/ui/EmptyState'
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog'
-import { Skeleton } from '@/components/ui/Skeleton'
 import { PAGINATION_DEFAULTS } from '@/constants'
 import { useDebounce } from '@/hooks/useDebounce'
 
@@ -164,27 +164,43 @@ export function CategoryList() {
     }
   }
 
-  function truncate(text: string, max: number): string {
-    return text.length > max ? text.slice(0, max) + '...' : text
-  }
-
-  function renderSkeletons() {
-    return Array.from({ length: 6 }).map((_, i) => (
-      <Card key={i} className="animate-pulse" padding={false}>
-        <div className="p-4 space-y-3">
-          <Skeleton variant="text" width="70%" />
-          <Skeleton variant="text" count={2} />
-          <div className="flex justify-between items-center pt-2">
-            <Skeleton variant="text" width="30%" />
-            <div className="flex gap-2">
-              <Skeleton variant="rectangular" width="2rem" height="2rem" />
-              <Skeleton variant="rectangular" width="2rem" height="2rem" />
-            </div>
-          </div>
+  const columns: TableColumn<Category>[] = [
+    {
+      key: 'name',
+      label: t('common.name'),
+      render: (item) => (
+        <span className="font-medium text-text-primary" translate="no">
+          {item.name}
+        </span>
+      ),
+    },
+    {
+      key: 'productCount',
+      label: t('categories.productCount'),
+    },
+    {
+      key: 'actions',
+      label: t('common.actions'),
+      render: (item) => (
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            icon={<Pencil size={14} />}
+            title={t('common.edit')}
+            onClick={() => handleOpenEdit(item)}
+          />
+          <Button
+            variant="ghost"
+            size="sm"
+            icon={<Trash2 size={14} className="text-red-500 hover:text-red-700" />}
+            title={t('common.delete')}
+            onClick={() => setDeleteConfirm(item)}
+          />
         </div>
-      </Card>
-    ))
-  }
+      ),
+    },
+  ]
 
   return (
     <div className="animate-fade-in space-y-6">
@@ -209,9 +225,13 @@ export function CategoryList() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {renderSkeletons()}
-          </div>
+          <Table<Category>
+            columns={columns}
+            data={[]}
+            loading
+            getRowKey={(item) => item.id}
+            dense
+          />
         ) : !data || data.data.length === 0 ? (
           <Card>
             <EmptyState
@@ -223,57 +243,12 @@ export function CategoryList() {
           </Card>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-{data.data.map((category) => (
-                <Card key={category.id} padding={false} className="group">
-                  <div className="p-4">
-                    <div className="flex items-start justify-between gap-2 mb-1">
-                      <h3 className="text-base font-semibold text-text-primary truncate" translate="no">
-                        {category.name}
-                      </h3>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <Badge variant="info" size="sm">
-                          {category.productCount} {t('common.products')}
-                        </Badge>
-                        <div className="flex gap-1">
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            icon={<Pencil size={14} />}
-                            onClick={() => handleOpenEdit(category)}
-                          />
-                          <Button
-                            variant="danger"
-                            size="sm"
-                            icon={<Trash2 size={14} />}
-                            onClick={() => setDeleteConfirm(category)}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                    <p className="text-sm text-text-muted leading-relaxed">
-                      {truncate(category.description, 100)}
-                    </p>
-                    {category.subcategories && category.subcategories.length > 0 && (
-                      <div className="mt-3">
-                        <p className="text-xs font-medium text-gray-400 mb-1.5">{t('categories.subcategories')}</p>
-                        <div className="flex flex-wrap gap-1.5">
-                          {category.subcategories.map(sub => (
-                            <span
-                              key={sub.id}
-                              className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200"
-                              translate="no"
-                            >
-                              {sub.name}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </Card>
-              ))}
-            </div>
+            <Table<Category>
+              columns={columns}
+              data={data.data}
+              getRowKey={(item) => item.id}
+              dense
+            />
 
             <Pagination
               page={data.page}
