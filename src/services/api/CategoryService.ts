@@ -45,4 +45,13 @@ export class CategoryService implements ICategoryService {
     const raw = await post<RawSubCategory>(`${BASE}/${categoryId}/subcategories`, { name });
     return raw ? mapSubCategory(raw) : null;
   }
+
+  async updateSubcategory(categoryId: string, subcategoryId: string, name: string): Promise<SubCategory | null> {
+    const raw = await put<RawSubCategory>(`${BASE}/${categoryId}/subcategories/${subcategoryId}`, { name });
+    return raw ? mapSubCategory(raw) : null;
+  }
+
+  async deleteSubcategory(categoryId: string, subcategoryId: string): Promise<boolean> {
+    return del(`${BASE}/${categoryId}/subcategories/${subcategoryId}`);
+  }
 }

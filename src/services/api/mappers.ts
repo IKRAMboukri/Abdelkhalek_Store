@@ -104,6 +104,7 @@ export interface RawSubCategory {
   id: number;
   name: string;
   options?: RawCategoryOption[] | null;
+  productCount?: number;
 }
 
 export interface RawCategory {
@@ -131,6 +132,9 @@ export function mapSubCategory(raw: RawSubCategory): SubCategory {
   const sub: SubCategory = { id: String(raw.id), name: raw.name };
   if (raw.options && raw.options.length > 0) {
     sub.options = raw.options.map(mapCategoryOption);
+  }
+  if (raw.productCount != null) {
+    sub.productCount = num(raw.productCount);
   }
   return sub;
 }

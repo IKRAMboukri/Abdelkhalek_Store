@@ -30,6 +30,7 @@ export interface SubCategory {
   id: string;
   name: string;
   options?: CategoryOption[];
+  productCount?: number;
 }
 
 export interface Category {

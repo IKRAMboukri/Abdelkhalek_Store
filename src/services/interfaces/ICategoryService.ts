@@ -8,4 +8,6 @@ export interface ICategoryService {
   deleteCategory(id: string): Promise<boolean>;
   getAllCategories(): Promise<Category[]>;
   addSubcategory(categoryId: string, name: string): Promise<SubCategory | null>;
+  updateSubcategory(categoryId: string, subcategoryId: string, name: string): Promise<SubCategory | null>;
+  deleteSubcategory(categoryId: string, subcategoryId: string): Promise<boolean>;
 }

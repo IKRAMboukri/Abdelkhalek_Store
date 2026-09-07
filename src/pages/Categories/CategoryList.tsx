@@ -26,6 +26,14 @@ interface CategoryFormData {
   parentId: string
 }
 
+interface SubcategoryRow {
+  id: string
+  name: string
+  parentId: string
+  parentName: string
+  productCount?: number
+}
+
 const initialFormData: CategoryFormData = {
   name: '',
   description: '',
@@ -50,6 +58,8 @@ export function CategoryList() {
   const [saving, setSaving] = useState(false)
 
   const [deleteConfirm, setDeleteConfirm] = useState<Category | null>(null)
+  const [subEdit, setSubEdit] = useState<{ categoryId: string; subcategoryId: string; name: string } | null>(null)
+  const [subDelete, setSubDelete] = useState<{ categoryId: string; subcategoryId: string; name: string } | null>(null)
   const debouncedSearch = useDebounce(search, 300)
 
   const fetchCategories = useCallback(async () => {
@@ -96,17 +106,31 @@ export function CategoryList() {
 
   function handleOpenAdd() {
     setEditingCategory(null)
+    setSubEdit(null)
     setFormData(initialFormData)
     setModalOpen(true)
   }
 
   function handleOpenEdit(category: Category) {
     setEditingCategory(category)
+    setSubEdit(null)
     setFormData({
       name: category.name,
       description: category.description,
       type: 'main',
       parentId: '',
+    })
+    setModalOpen(true)
+  }
+
+  function handleOpenEditSub(row: SubcategoryRow) {
+    setEditingCategory(null)
+    setSubEdit({ categoryId: row.parentId, subcategoryId: row.id, name: row.name })
+    setFormData({
+      name: row.name,
+      description: '',
+      type: 'sub',
+      parentId: row.parentId,
     })
     setModalOpen(true)
   }
@@ -128,6 +152,9 @@ export function CategoryList() {
           description: formData.description.trim(),
         })
         addToast({ type: 'success', title: t('common.updated'), message: t('categories.updated') })
+      } else if (subEdit) {
+        await categoryService.updateSubcategory(subEdit.categoryId, subEdit.subcategoryId, formData.name.trim())
+        addToast({ type: 'success', title: t('common.updated'), message: t('categories.updated') })
       } else if (formData.type === 'main') {
         await categoryService.createCategory({
           name: formData.name.trim(),
@@ -140,6 +167,7 @@ export function CategoryList() {
         addToast({ type: 'success', title: t('common.created'), message: t('categories.subcategoryCreated') })
       }
       setModalOpen(false)
+      setSubEdit(null)
       fetchCategories()
       loadAllCategories()
     } catch {
@@ -160,6 +188,19 @@ export function CategoryList() {
     } catch (error) {
       console.error('CATEGORY DELETE ERROR:', error)
       console.error('CATEGORY DELETE ERROR MESSAGE:', error instanceof Error ? error.message : error)
+      addToast({ type: 'error', title: t('common.validationError'), message: t('categories.deleteError') })
+    }
+  }
+
+  async function handleDeleteSub() {
+    if (!subDelete) return
+    try {
+      await categoryService.deleteSubcategory(subDelete.categoryId, subDelete.subcategoryId)
+      addToast({ type: 'success', title: t('common.deleted'), message: t('categories.deleted') })
+      setSubDelete(null)
+      fetchCategories()
+      loadAllCategories()
+    } catch {
       addToast({ type: 'error', title: t('common.validationError'), message: t('categories.deleteError') })
     }
   }
@@ -202,6 +243,60 @@ export function CategoryList() {
     },
   ]
 
+  const subcategoryColumns: TableColumn<SubcategoryRow>[] = [
+    {
+      key: 'name',
+      label: t('common.name'),
+      render: (item) => (
+        <span className="font-medium text-text-primary" translate="no">
+          {item.name}
+        </span>
+      ),
+    },
+    {
+      key: 'parentName',
+      label: t('categories.parentCategory'),
+      render: (item) => item.parentName,
+    },
+    {
+      key: 'productCount',
+      label: t('categories.productCount'),
+      render: (item) => item.productCount ?? '—',
+    },
+    {
+      key: 'actions',
+      label: t('common.actions'),
+      render: (item) => (
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            icon={<Pencil size={14} />}
+            title={t('common.edit')}
+            onClick={() => handleOpenEditSub(item)}
+          />
+          <Button
+            variant="ghost"
+            size="sm"
+            icon={<Trash2 size={14} className="text-red-500 hover:text-red-700" />}
+            title={t('common.delete')}
+            onClick={() => setSubDelete({ categoryId: item.parentId, subcategoryId: item.id, name: item.name })}
+          />
+        </div>
+      ),
+    },
+  ]
+
+  const subcategoryRows: SubcategoryRow[] = (data?.data ?? []).flatMap((category) =>
+    (category.subcategories ?? []).map((sub) => ({
+      id: sub.id,
+      name: sub.name,
+      parentId: category.id,
+      parentName: category.name,
+      productCount: sub.productCount,
+    })),
+  )
+
   return (
     <div className="animate-fade-in space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -225,13 +320,25 @@ export function CategoryList() {
         </div>
 
         {loading ? (
-          <Table<Category>
-            columns={columns}
-            data={[]}
-            loading
-            getRowKey={(item) => item.id}
-            dense
-          />
+          <>
+            <Table<Category>
+              columns={columns}
+              data={[]}
+              loading
+              getRowKey={(item) => item.id}
+              dense
+            />
+            <div className="space-y-3">
+              <h2 className="text-lg font-semibold text-text-primary">{t('categories.subcategories')}</h2>
+              <Table<SubcategoryRow>
+                columns={subcategoryColumns}
+                data={[]}
+                loading
+                getRowKey={(item) => item.id}
+                dense
+              />
+            </div>
+          </>
         ) : !data || data.data.length === 0 ? (
           <Card>
             <EmptyState
@@ -250,6 +357,17 @@ export function CategoryList() {
               dense
             />
 
+            <div className="space-y-3">
+              <h2 className="text-lg font-semibold text-text-primary">{t('categories.subcategories')}</h2>
+              <Table<SubcategoryRow>
+                columns={subcategoryColumns}
+                data={subcategoryRows}
+                getRowKey={(item) => item.id}
+                emptyMessage={t('common.noData')}
+                dense
+              />
+            </div>
+
             <Pagination
               page={data.page}
               totalPages={data.totalPages}
@@ -267,7 +385,7 @@ export function CategoryList() {
         <Modal
           open={modalOpen}
           onClose={() => setModalOpen(false)}
-          title={editingCategory ? t('categories.editTitle') : t('categories.addTitle')}
+          title={editingCategory || subEdit ? t('categories.editTitle') : t('categories.addTitle')}
           size="md"
           footer={
             <>
@@ -275,7 +393,7 @@ export function CategoryList() {
                 {t('common.cancel')}
               </Button>
               <Button loading={saving} onClick={handleSave}>
-                {editingCategory ? t('common.update') : t('common.create')}
+                {editingCategory || subEdit ? t('common.update') : t('common.create')}
               </Button>
             </>
           }
@@ -292,7 +410,7 @@ export function CategoryList() {
                     <button
                       key={type}
                       type="button"
-                      disabled={!!editingCategory}
+                      disabled={!!editingCategory || !!subEdit}
                       onClick={() => setFormData({ ...formData, type })}
                       className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg border text-sm font-medium transition-all duration-150 cursor-pointer disabled:cursor-not-allowed disabled:opacity-60 ${
                         active
@@ -321,7 +439,7 @@ export function CategoryList() {
                 onChange={(e) => setFormData({ ...formData, parentId: e.target.value })}
                 options={allCategories.map(c => ({ value: c.id, label: c.name }))}
                 placeholder={allCategories.length ? t('categories.selectParent') : t('categories.noMainCategories')}
-                disabled={!allCategories.length}
+                disabled={!!subEdit || !allCategories.length}
               />
             )}
 
@@ -357,6 +475,16 @@ export function CategoryList() {
           onConfirm={handleDelete}
           title={t('categories.deleteTitle')}
           message={t('categories.deleteConfirm', { name: deleteConfirm?.name ?? '' })}
+          confirmText={t('common.delete')}
+          variant="danger"
+        />
+
+        <ConfirmDialog
+          open={subDelete !== null}
+          onClose={() => setSubDelete(null)}
+          onConfirm={handleDeleteSub}
+          title={t('categories.deleteTitle')}
+          message={t('categories.deleteConfirm', { name: subDelete?.name ?? '' })}
           confirmText={t('common.delete')}
           variant="danger"
         />
