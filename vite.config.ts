@@ -10,7 +10,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg'],
+      includeAssets: ['favicon.png'],
       manifest: {
         name: 'Abdelkhalek Store',
         short_name: 'Abdelkhalek',
