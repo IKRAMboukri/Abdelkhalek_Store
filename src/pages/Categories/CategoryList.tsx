@@ -287,7 +287,7 @@ export function CategoryList() {
     },
   ]
 
-  const subcategoryRows: SubcategoryRow[] = (data?.data ?? []).flatMap((category) =>
+  const subcategoryRows: SubcategoryRow[] = (allCategories.length > 0 ? allCategories : data?.data ?? []).flatMap((category) =>
     (category.subcategories ?? []).map((sub) => ({
       id: sub.id,
       name: sub.name,
@@ -295,6 +295,20 @@ export function CategoryList() {
       parentName: category.name,
       productCount: sub.productCount,
     })),
+  )
+
+  const subcategoriesSection = (
+    <div className="space-y-3">
+      <h2 className="text-lg font-semibold text-text-primary">{t('categories.subcategories')}</h2>
+      <Table<SubcategoryRow>
+        columns={subcategoryColumns}
+        data={subcategoryRows}
+        loading={loading}
+        getRowKey={(item) => item.id}
+        emptyMessage={t('common.noData')}
+        dense
+      />
+    </div>
   )
 
   return (
@@ -328,26 +342,20 @@ export function CategoryList() {
               getRowKey={(item) => item.id}
               dense
             />
-            <div className="space-y-3">
-              <h2 className="text-lg font-semibold text-text-primary">{t('categories.subcategories')}</h2>
-              <Table<SubcategoryRow>
-                columns={subcategoryColumns}
-                data={[]}
-                loading
-                getRowKey={(item) => item.id}
-                dense
-              />
-            </div>
+            {subcategoriesSection}
           </>
         ) : !data || data.data.length === 0 ? (
-          <Card>
-            <EmptyState
-              icon={<Package size={32} />}
-              title={t('categories.noCategories')}
-              description={search ? t('common.noSearchResults') : t('categories.noCategories')}
-              action={!search ? { label: t('categories.addTitle'), onClick: handleOpenAdd } : undefined}
-            />
-          </Card>
+          <>
+            <Card>
+              <EmptyState
+                icon={<Package size={32} />}
+                title={t('categories.noCategories')}
+                description={search ? t('common.noSearchResults') : t('categories.noCategories')}
+                action={!search ? { label: t('categories.addTitle'), onClick: handleOpenAdd } : undefined}
+              />
+            </Card>
+            {subcategoryRows.length > 0 && subcategoriesSection}
+          </>
         ) : (
           <>
             <Table<Category>
@@ -357,16 +365,7 @@ export function CategoryList() {
               dense
             />
 
-            <div className="space-y-3">
-              <h2 className="text-lg font-semibold text-text-primary">{t('categories.subcategories')}</h2>
-              <Table<SubcategoryRow>
-                columns={subcategoryColumns}
-                data={subcategoryRows}
-                getRowKey={(item) => item.id}
-                emptyMessage={t('common.noData')}
-                dense
-              />
-            </div>
+            {subcategoryRows.length > 0 && subcategoriesSection}
 
             <Pagination
               page={data.page}
