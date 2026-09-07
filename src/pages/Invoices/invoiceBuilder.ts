@@ -19,6 +19,7 @@ export function buildInvoice(sale: Sale, settings: StoreSettings, customer?: Cus
       quantity: i.quantity,
       unitPrice: i.unitPrice,
       total: i.total,
+      availability: i.availability,
     })),
     subtotal: sale.subtotal,
     discount: sale.discount,

@@ -52,7 +52,6 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
     options: {} as Record<string, string>,
     purchasePrice: '',
     sellingPrice: '',
-    availability: 'sur_commande',
     unit: 'piece',
     status: 'active' as string,
     barcode: '',
@@ -88,7 +87,6 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
         options: product.options ?? {},
         purchasePrice: String(product.purchasePrice),
         sellingPrice: String(product.sellingPrice),
-        availability: product.availability ?? 'sur_commande',
         unit: product.unit,
         status: product.status,
         barcode: product.barcode,
@@ -183,8 +181,6 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
     const sp = parseFloat(formData.sellingPrice)
     if (!formData.sellingPrice || isNaN(sp) || sp <= 0) newErrors.sellingPrice = t('products.pricePositive')
 
-    if (!formData.availability) newErrors.availability = t('common.requiredField')
-
     if (!formData.unit) newErrors.unit = t('products.unitRequired')
 
     setErrors(newErrors)
@@ -208,7 +204,6 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
       options: formData.options,
       purchasePrice: parseFloat(formData.purchasePrice),
       sellingPrice: parseFloat(formData.sellingPrice),
-      availability: formData.availability as Product['availability'],
       unit: formData.unit,
       status: formData.status as 'active' | 'inactive' | 'discontinued',
       barcode: formData.barcode.trim(),
@@ -278,18 +273,6 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
           placeholder="0.00"
           disabled={loading}
           icon={<DollarSign size={16} />}
-        />
-
-        <Select
-          label={`${t('products.availability')} *`}
-          value={formData.availability}
-          onChange={(e) => handleChange('availability', e.target.value)}
-          options={[
-            { value: 'sur_commande', label: t('products.surCommande') },
-            { value: 'sur_place', label: t('products.surPlace') },
-          ]}
-          error={errors.availability}
-          disabled={loading}
         />
 
         <div className="md:col-span-2">

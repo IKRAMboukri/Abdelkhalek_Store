@@ -26,6 +26,7 @@ export class SaleService implements ISaleService {
         quantity: item.quantity,
         unitPrice: item.unitPrice,
         total: item.total,
+        availability: item.availability ?? 'sur_commande',
       })),
       subtotal: sale.subtotal,
       discount: sale.discount,

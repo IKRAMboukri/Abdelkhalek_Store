@@ -29,6 +29,7 @@ def build_invoice(sale: Sale, settings: StoreSettings, customer: Customer | None
                 quantity=item.quantity,
                 unitPrice=float(item.unit_price),
                 total=float(item.total),
+                availability=item.availability,
             )
             for item in sale.items
         ],

@@ -13,6 +13,7 @@ class SaleItemCreate(BaseModel):
     quantity: int = Field(..., ge=1)
     unitPrice: float = 0
     total: float = 0
+    availability: Literal["sur_commande", "sur_place"] = "sur_commande"
 
 
 class SaleCreate(BaseModel):
@@ -44,6 +45,7 @@ class SaleItemRead(BaseModel):
     quantity: int
     unit_price: float
     total: float
+    availability: Literal["sur_commande", "sur_place"] = "sur_commande"
 
 
 class SaleRead(ApiModel):

@@ -63,7 +63,6 @@ export interface RawProduct {
   options?: Record<string, string>;
   purchasePrice: number;
   sellingPrice: number;
-  availability: Product['availability'];
   unit: string;
   image: string;
   status: Product['status'];
@@ -84,7 +83,6 @@ export function mapProduct(raw: RawProduct): Product {
     options: raw.options ?? {},
     purchasePrice: num(raw.purchasePrice),
     sellingPrice: num(raw.sellingPrice),
-    availability: raw.availability,
     unit: raw.unit,
     image: raw.image,
     status: raw.status,
@@ -189,16 +187,21 @@ export interface RawSaleItem {
   quantity: number;
   unitPrice: number;
   total: number;
+  availability?: SaleItem['availability'];
 }
 
 export function mapSaleItem(raw: RawSaleItem): SaleItem {
-  return {
+  const item: SaleItem = {
     productId: sid(raw.productId),
     productName: raw.productName,
     quantity: num(raw.quantity),
     unitPrice: num(raw.unitPrice),
     total: num(raw.total),
   };
+  if (raw.availability) {
+    item.availability = raw.availability;
+  }
+  return item;
 }
 
 export interface RawSale {
@@ -352,15 +355,20 @@ export interface RawInvoiceItem {
   quantity: number;
   unitPrice: number;
   total: number;
+  availability?: SaleItem['availability'];
 }
 
 function mapInvoiceItem(raw: RawInvoiceItem): InvoiceItem {
-  return {
+  const item: InvoiceItem = {
     productName: raw.productName,
     quantity: num(raw.quantity),
     unitPrice: num(raw.unitPrice),
     total: num(raw.total),
   };
+  if (raw.availability) {
+    item.availability = raw.availability;
+  }
+  return item;
 }
 
 export interface RawInvoice {

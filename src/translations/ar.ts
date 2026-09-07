@@ -89,6 +89,7 @@ export const ar = {
     price: 'السعر',
     quantity: 'الكمية',
     unit: 'الوحدة',
+    availability: 'التوفر',
     barcode: 'الباركود',
     purchasePrice: 'سعر الشراء',
     sellingPrice: 'سعر البيع',

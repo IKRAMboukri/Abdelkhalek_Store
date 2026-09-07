@@ -89,6 +89,7 @@ export const en = {
     price: 'Price',
     quantity: 'Quantity',
     unit: 'Unit',
+    availability: 'Availability',
     barcode: 'Barcode',
     purchasePrice: 'Purchase Price',
     sellingPrice: 'Selling Price',

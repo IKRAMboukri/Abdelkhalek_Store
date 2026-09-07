@@ -11,6 +11,9 @@ interface InvoiceDocumentProps {
 export function InvoiceDocument({ invoice, className }: InvoiceDocumentProps) {
   const { t } = useLocale()
 
+  const availabilityLabel = (availability?: Invoice['items'][number]['availability']) =>
+    availability === 'sur_place' ? t('products.surPlace') : t('products.surCommande')
+
   return (
     <div
       className={clsx('invoice-printable bg-white text-black p-3 mx-auto', 'max-w-[210mm]', className)}
@@ -70,6 +73,7 @@ export function InvoiceDocument({ invoice, className }: InvoiceDocumentProps) {
           <tr className="border-b-2 border-gray-800">
             <th className="text-left py-1 px-1 text-[10px] font-semibold uppercase tracking-wider text-gray-600 w-6">#</th>
             <th className="text-left py-1 px-1 text-[10px] font-semibold uppercase tracking-wider text-gray-600">{t('invoices.product')}</th>
+            <th className="text-left py-1 px-1 text-[10px] font-semibold uppercase tracking-wider text-gray-600 w-24">{t('common.availability')}</th>
             <th className="text-right py-1 px-1 text-[10px] font-semibold uppercase tracking-wider text-gray-600 w-12">{t('invoices.quantity')}</th>
             <th className="text-right py-1 px-1 text-[10px] font-semibold uppercase tracking-wider text-gray-600 w-20">{t('invoices.unitPrice')}</th>
             <th className="text-right py-1 px-1 text-[10px] font-semibold uppercase tracking-wider text-gray-600 w-20">{t('invoices.total')}</th>
@@ -80,6 +84,7 @@ export function InvoiceDocument({ invoice, className }: InvoiceDocumentProps) {
             <tr key={idx} className="border-b border-gray-100">
               <td className="py-1 px-1 text-xs text-gray-500">{idx + 1}</td>
               <td className="py-1 px-1 text-xs text-black">{item.productName}</td>
+              <td className="py-1 px-1 text-xs text-gray-600">{availabilityLabel(item.availability)}</td>
               <td className="py-1 px-1 text-xs text-right text-black">{item.quantity}</td>
               <td className="py-1 px-1 text-xs text-right text-black">DH {item.unitPrice.toFixed(2)}</td>
               <td className="py-1 px-1 text-xs text-right font-medium text-black">DH {item.total.toFixed(2)}</td>

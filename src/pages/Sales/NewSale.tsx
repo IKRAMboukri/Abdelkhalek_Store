@@ -138,10 +138,17 @@ export function NewSale() {
           quantity: 1,
           unitPrice,
           total: lineTotal({ unitPrice, quantity: 1 }),
+          availability: 'sur_commande' as const,
         },
       ]
       return next
     })
+  }
+
+  const updateAvailability = (productId: string, availability: CartItem['availability']) => {
+    setCartItems((prev) =>
+      prev.map((item) => (item.productId === productId ? { ...item, availability } : item)),
+    )
   }
 
   const updateQuantity = (productId: string, quantity: number) => {
@@ -225,6 +232,7 @@ export function NewSale() {
           quantity: i.quantity,
           unitPrice: i.unitPrice,
           total: i.total,
+          availability: i.availability,
         })),
         subtotal: createdSale.subtotal,
         discount: createdSale.discount,
@@ -367,10 +375,7 @@ export function NewSale() {
                           </p>
                           <p className="text-xs text-text-muted">
                             {currencySymbol}
-                            {p.sellingPrice.toFixed(2)} |{' '}
-                            {p.availability === 'sur_place'
-                              ? t('products.surPlace')
-                              : t('products.surCommande')}
+                            {p.sellingPrice.toFixed(2)}
                           </p>
                         </div>
                         <Button
@@ -399,6 +404,7 @@ export function NewSale() {
                     <thead>
                       <tr className="border-b border-border">
                         <th className="text-left py-2 text-text-muted font-medium">{t('common.product')}</th>
+                        <th className="text-left py-2 text-text-muted font-medium">{t('common.availability')}</th>
                         <th className="text-right py-2 text-text-muted font-medium">{t('common.price')}</th>
                         <th className="text-right py-2 text-text-muted font-medium">{t('common.quantity')}</th>
                         <th className="text-right py-2 text-text-muted font-medium">{t('common.total')}</th>
@@ -409,6 +415,16 @@ export function NewSale() {
                       {cartItems.map((item) => (
                         <tr key={item.productId} className="border-b border-border">
                           <td className="py-2 text-text-primary">{item.productName}</td>
+                          <td className="py-2">
+                            <select
+                              value={item.availability ?? 'sur_commande'}
+                              onChange={(e) => updateAvailability(item.productId, e.target.value as CartItem['availability'])}
+                              className="rounded-lg border border-border bg-white px-2 py-1 text-xs text-text-primary focus:outline-hidden focus:ring-2 focus:ring-primary-500 cursor-pointer"
+                            >
+                              <option value="sur_commande">{t('products.surCommande')}</option>
+                              <option value="sur_place">{t('products.surPlace')}</option>
+                            </select>
+                          </td>
                           <td className="py-2 text-right text-text-primary">
                             {currencySymbol}
                             {item.unitPrice.toFixed(2)}

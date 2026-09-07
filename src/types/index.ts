@@ -1,5 +1,3 @@
-export type ProductAvailability = 'sur_commande' | 'sur_place';
-
 export interface Product {
   id: string;
   name: string;
@@ -11,7 +9,6 @@ export interface Product {
   options?: Record<string, string>;
   purchasePrice: number;
   sellingPrice: number;
-  availability: ProductAvailability;
   unit: string;
   image: string;
   status: 'active' | 'inactive' | 'discontinued';
@@ -72,12 +69,15 @@ export interface Sale {
   createdAt: string;
 }
 
+export type SaleItemAvailability = 'sur_commande' | 'sur_place';
+
 export interface SaleItem {
   productId: string;
   productName: string;
   quantity: number;
   unitPrice: number;
   total: number;
+  availability?: SaleItemAvailability;
 }
 
 export interface Credit {
@@ -231,6 +231,7 @@ export interface InvoiceItem {
   quantity: number
   unitPrice: number
   total: number
+  availability?: SaleItemAvailability
 }
 
 export interface Invoice {

@@ -10,8 +10,8 @@ from app.schemas.sale import SaleCreate, SaleUpdate
 
 class SaleService:
     """Sale lifecycle. Totals are always recalculated server-side from the
-    current product prices; availability is informational only and never
-    blocks a sale."""
+    current product prices; each line's availability (sur_place/sur_commande)
+    is captured on the sale item at the moment of sale."""
 
     def __init__(self, db: Session) -> None:
         self.db = db
@@ -60,6 +60,7 @@ class SaleService:
                     quantity=quantity,
                     unit_price=unit_price,
                     total=total,
+                    availability=item.availability,
                 )
             )
 

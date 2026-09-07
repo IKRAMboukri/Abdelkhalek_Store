@@ -89,6 +89,7 @@ export const fr = {
     price: 'Prix',
     quantity: 'Quantité',
     unit: 'Unité',
+    availability: 'Disponibilité',
     barcode: 'Code-barres',
     purchasePrice: 'Prix d\'Achat',
     sellingPrice: 'Prix de Vente',

@@ -44,5 +44,6 @@ class SaleItem(Base):
     quantity: Mapped[int] = mapped_column(Integer, nullable=False)
     unit_price: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
     total: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
+    availability: Mapped[str] = mapped_column(String(20), nullable=False, default="sur_commande")
 
     sale: Mapped[Sale] = relationship(back_populates="items")

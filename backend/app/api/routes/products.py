@@ -62,7 +62,6 @@ def create_product(data: ProductCreate, db: DbSession):
             "options_json": data.options,
             "purchase_price": data.purchasePrice,
             "selling_price": data.sellingPrice,
-            "availability": data.availability,
             "unit": data.unit,
             "image": data.image,
             "status": data.status,

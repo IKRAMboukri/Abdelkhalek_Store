@@ -8,6 +8,7 @@ class InvoiceItemRead(BaseModel):
     quantity: int
     unitPrice: float
     total: float
+    availability: str = "sur_commande"
 
 
 class InvoiceRead(BaseModel):

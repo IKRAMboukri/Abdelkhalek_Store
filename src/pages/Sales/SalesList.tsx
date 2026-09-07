@@ -330,6 +330,7 @@ export function SalesList() {
               <thead>
                 <tr className="border-b border-border">
                   <th className="text-left py-2 text-text-muted font-medium">{t('common.product')}</th>
+                  <th className="text-left py-2 text-text-muted font-medium">{t('common.availability')}</th>
                   <th className="text-right py-2 text-text-muted font-medium">{t('common.price')}</th>
                   <th className="text-right py-2 text-text-muted font-medium">{t('common.quantity')}</th>
                   <th className="text-right py-2 text-text-muted font-medium">{t('common.total')}</th>
@@ -339,6 +340,9 @@ export function SalesList() {
                 {viewSale.items.map((item, idx) => (
                   <tr key={idx} className="border-b border-border">
                     <td className="py-2 text-text-primary">{item.productName}</td>
+                    <td className="py-2 text-text-primary">
+                      {item.availability === 'sur_place' ? t('products.surPlace') : t('products.surCommande')}
+                    </td>
                     <td className="py-2 text-right text-text-primary">DH {item.unitPrice.toFixed(2)}</td>
                     <td className="py-2 text-right text-text-primary">{item.quantity}</td>
                     <td className="py-2 text-right text-text-primary font-medium">DH {item.total.toFixed(2)}</td>

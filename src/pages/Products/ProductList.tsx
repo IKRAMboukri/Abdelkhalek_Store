@@ -147,9 +147,8 @@ export function ProductList() {
     }
   }
 
-  function getAvailabilityBadge(availability: Product['availability']) {
-    if (availability === 'sur_place') return { label: t('products.surPlace'), color: 'text-green-600 font-semibold' }
-    return { label: t('products.surCommande'), color: 'text-blue-600 font-semibold' }
+  function getAvailabilityBadge() {
+    return null
   }
 
   const filterConfigs: FilterConfig[] = [
@@ -201,13 +200,6 @@ export function ProductList() {
           )}
         </div>
       ),
-    },
-    {
-      key: 'availability', label: t('products.availability'),
-      render: (item) => {
-        const badge = getAvailabilityBadge(item.availability)
-        return <span className={badge.color}>{badge.label}</span>
-      },
     },
     {
       key: 'sellingPrice', label: t('common.sellingPrice'), sortable: true,

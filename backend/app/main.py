@@ -20,6 +20,7 @@ LEGACY_MIGRATIONS = [
     'ALTER TABLE products ADD COLUMN availability VARCHAR(20) NOT NULL DEFAULT \'sur_commande\'',
     "ALTER TABLE products DROP COLUMN stock",
     "ALTER TABLE products DROP COLUMN min_stock",
+    'ALTER TABLE sale_items ADD COLUMN availability VARCHAR(20) NOT NULL DEFAULT \'sur_commande\'',
 ]
 
 # Column list / select list shared by the SQLite products rebuild below.

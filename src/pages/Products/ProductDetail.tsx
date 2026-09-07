@@ -78,11 +78,6 @@ export function ProductDetail() {
     }
   }
 
-  function getAvailabilityInfo(availability: Product['availability']) {
-    if (availability === 'sur_place') return { label: t('products.surPlace'), color: 'text-emerald-600', bg: 'bg-emerald-50 border-emerald-200' }
-    return { label: t('products.surCommande'), color: 'text-blue-600', bg: 'bg-blue-50 border-blue-200' }
-  }
-
   if (loading) {
     return (
       <div className="animate-fade-in">
@@ -120,7 +115,6 @@ export function ProductDetail() {
     )
   }
 
-  const availabilityInfo = getAvailabilityInfo(product.availability)
   const isPdf = product.image?.startsWith('data:application/pdf')
   const optionLabels = resolveOptionLabels(categories, product.categoryId ?? '', product.subCategoryId ?? '', product.options ?? {})
 
@@ -137,7 +131,6 @@ export function ProductDetail() {
     { icon: <ShoppingCart size={16} />, label: t('common.unit'), value: t(`units.${product.unit}`) || product.unit },
     { icon: <DollarSign size={16} />, label: t('common.purchasePrice'), value: `DH ${product.purchasePrice.toFixed(2)}` },
     { icon: <DollarSign size={16} />, label: t('common.sellingPrice'), value: `DH ${product.sellingPrice.toFixed(2)}` },
-    { icon: <Package size={16} />, label: t('products.availability'), value: product.availability === 'sur_place' ? t('products.surPlace') : t('products.surCommande') },
     { icon: <Barcode size={16} />, label: t('common.barcode'), value: product.barcode || '-' },
     { icon: <Calendar size={16} />, label: t('common.created'), value: new Date(product.createdAt).toLocaleDateString() },
     { icon: <Clock size={16} />, label: t('common.updated'), value: new Date(product.updatedAt).toLocaleDateString() },
@@ -187,12 +180,6 @@ export function ProductDetail() {
               <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
                 <span className="text-sm text-text-muted">{t('common.purchasePrice')}</span>
                 <span className="text-lg font-semibold text-text-primary">DH {product.purchasePrice.toFixed(2)}</span>
-              </div>
-              <div className="flex items-center justify-between p-3 rounded-xl border border-gray-200">
-                <span className="text-sm text-text-muted">{t('products.availability')}</span>
-                <span className={`text-sm font-semibold px-3 py-1 rounded-full border ${availabilityInfo.bg} ${availabilityInfo.color}`}>
-                  {availabilityInfo.label}
-                </span>
               </div>
             </div>
 

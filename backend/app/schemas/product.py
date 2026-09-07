@@ -1,12 +1,9 @@
 import datetime as dt
-from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
 from app.schemas.common import ApiModel, Page
-
-ProductAvailability = Literal["sur_commande", "sur_place"]
 
 
 class ProductCreate(BaseModel):
@@ -17,7 +14,6 @@ class ProductCreate(BaseModel):
     options: dict[str, str] = {}
     purchasePrice: float = Field(default=0, ge=0)
     sellingPrice: float = Field(default=0, ge=0)
-    availability: ProductAvailability = "sur_commande"
     unit: str = "piece"
     image: str = ""
     status: str = "active"
@@ -32,7 +28,6 @@ class ProductUpdate(BaseModel):
     options: dict[str, str] | None = None
     purchasePrice: float | None = Field(default=None, ge=0)
     sellingPrice: float | None = Field(default=None, ge=0)
-    availability: ProductAvailability | None = None
     unit: str | None = None
     image: str | None = None
     status: str | None = None
@@ -52,7 +47,6 @@ class ProductRead(ApiModel):
     options: dict = Field(default_factory=dict)
     purchase_price: float
     selling_price: float
-    availability: ProductAvailability
     unit: str
     image: str
     status: str
