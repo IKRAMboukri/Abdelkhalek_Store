@@ -1,0 +1,4 @@
+# Render static-site SPA fallback (copied to dist/ by Vite).
+# Any unmatched path serves index.html so client-side routes
+# (/login, /products, /sales, ...) never 404 on refresh/deep link.
+/*    /index.html   200

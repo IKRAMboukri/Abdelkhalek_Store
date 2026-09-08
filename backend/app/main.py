@@ -1,5 +1,5 @@
 import logging
-from contextlib import asynccontextmanager, suppress
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -119,18 +119,26 @@ def run_legacy_migrations() -> None:
     cannot be reached the migration is skipped with a logged warning instead of
     preventing the API from starting; schema creation (``create_all``) and the
     seed run right after and remain the source of truth.
+
+    Each statement runs in its own transaction: PostgreSQL aborts the whole
+    transaction on the first failing statement, so a single statement that is
+    already applied (e.g. an idempotent DROP) must not silently cancel the ones
+    after it.
     """
     try:
         _make_category_id_nullable()
-        with engine.begin() as conn:
-            for statement in LEGACY_MIGRATIONS:
-                with suppress(Exception):
+        for statement in LEGACY_MIGRATIONS:
+            try:
+                with engine.begin() as conn:
                     conn.execute(text(statement))
-            # Store settings created by the original demo seed: replace only
-            # rows that still hold those exact untouched demo values. Safe on a
-            # fresh database where the table does not exist yet (create_all
-            # runs below).
-            with suppress(Exception):
+            except Exception as exc:
+                logger.warning("Legacy migration skipped (%s): %s", statement, exc)
+        # Store settings created by the original demo seed: replace only
+        # rows that still hold those exact untouched demo values. Safe on a
+        # fresh database where the table does not exist yet (create_all
+        # runs below).
+        try:
+            with engine.begin() as conn:
                 conn.execute(
                     text(
                         """
@@ -147,6 +155,8 @@ def run_legacy_migrations() -> None:
                         """
                     )
                 )
+        except Exception as exc:
+            logger.warning("Legacy settings update skipped: %s", exc)
     except SQLAlchemyError as exc:
         logger.warning("Legacy migrations skipped (database unavailable): %s", exc)
 
