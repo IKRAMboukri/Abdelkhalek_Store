@@ -337,6 +337,8 @@ export const ar = {
     noItems: 'لم يتم إضافة أي منتجات',
     customerRequired: 'الرجاء اختيار عميل',
     itemsRequired: 'الرجاء إضافة منتج واحد على الأقل',
+    availabilityRequired: 'يرجى اختيار "في المتجر" أو "حسب الطلب" لكل منتج',
+    selectAvailability: 'نوع البيع',
     totalMustBePositive: 'يجب أن يكون المجموع أكبر من صفر',
     deleteTitle: 'حذف البيع',
     searchInvoicePlaceholder: 'ابحث برقم الفاتورة أو اسم العميل...',

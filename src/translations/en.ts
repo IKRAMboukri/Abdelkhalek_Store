@@ -337,6 +337,8 @@ export const en = {
     noItems: 'No items added yet',
     customerRequired: 'Please select a customer',
     itemsRequired: 'Please add at least one product',
+    availabilityRequired: 'Please choose Sur place or Sur commande for every product',
+    selectAvailability: 'Type de vente',
     totalMustBePositive: 'The total must be greater than zero',
     deleteTitle: 'Delete Sale',
     searchInvoicePlaceholder: 'Search by invoice or customer...',

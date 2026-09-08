@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, Plus, Trash2, Minus, ShoppingCart, User, Printer } from 'lucide-react'
-import type { Customer, Product, StoreSettings, SaleItem, Invoice } from '@/types'
+import type { Customer, Product, StoreSettings, SaleItem, SaleItemAvailability, Invoice } from '@/types'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
 import { Input } from '@/components/ui/Input'
@@ -14,8 +14,9 @@ import { useToast } from '@/hooks/useToast'
 import { useLocale } from '@/hooks/useLocale'
 
 
-interface CartItem extends SaleItem {
+interface CartItem extends Omit<SaleItem, 'availability'> {
   productId: string
+  availability: '' | SaleItemAvailability
 }
 
 // Runtime marker: lets you verify in DevTools that the browser is executing
@@ -138,7 +139,7 @@ export function NewSale() {
           quantity: 1,
           unitPrice,
           total: lineTotal({ unitPrice, quantity: 1 }),
-          availability: 'sur_commande' as const,
+          availability: '' as const,
         },
       ]
       return next
@@ -178,13 +179,22 @@ export function NewSale() {
   const validate = (totalValue: number): string | null => {
     if (!selectedCustomerId) return t('sales.customerRequired')
     if (cartItems.length === 0) return t('sales.itemsRequired')
+    if (cartItems.some((item) => item.availability !== 'sur_commande' && item.availability !== 'sur_place'))
+      return t('sales.availabilityRequired')
     if (!(totalValue > 0)) return t('sales.totalMustBePositive')
     return null
   }
 
   const handleCompleteSale = async () => {
     // Recompute everything from the cart at call time — no stale totals.
-    const itemsWithTotals = cartItems.map((item) => ({ ...item, total: lineTotal(item) }))
+    const itemsWithTotals: SaleItem[] = cartItems.map((item) => ({
+      productId: item.productId,
+      productName: item.productName,
+      quantity: item.quantity,
+      unitPrice: item.unitPrice,
+      total: lineTotal(item),
+      availability: item.availability || 'sur_commande',
+    }))
     const freshSubtotal = sumSubtotal(cartItems)
     const freshDiscount = toMoney(discount)
     const afterDiscount = Math.round((freshSubtotal - freshDiscount) * 100) / 100
@@ -417,10 +427,12 @@ export function NewSale() {
                           <td className="py-2 text-text-primary">{item.productName}</td>
                           <td className="py-2">
                             <select
-                              value={item.availability ?? 'sur_commande'}
+                              required
+                              value={item.availability}
                               onChange={(e) => updateAvailability(item.productId, e.target.value as CartItem['availability'])}
-                              className="rounded-lg border border-border bg-white px-2 py-1 text-xs text-text-primary focus:outline-hidden focus:ring-2 focus:ring-primary-500 cursor-pointer"
+                              className={`rounded-lg border bg-white px-2 py-1 text-xs text-text-primary focus:outline-hidden focus:ring-2 focus:ring-primary-500 cursor-pointer ${item.availability ? 'border-border' : 'border-red-300'}`}
                             >
+                              <option value="">{t('sales.selectAvailability')}</option>
                               <option value="sur_commande">{t('products.surCommande')}</option>
                               <option value="sur_place">{t('products.surPlace')}</option>
                             </select>

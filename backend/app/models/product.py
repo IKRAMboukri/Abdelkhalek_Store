@@ -21,7 +21,6 @@ class Product(Base):
     options_json: Mapped[dict] = mapped_column(JSON, nullable=False, default=dict)
     purchase_price: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False, default=0)
     selling_price: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False, default=0)
-    availability: Mapped[str] = mapped_column(String(20), nullable=False, default="sur_commande")
     unit: Mapped[str] = mapped_column(String(20), nullable=False, default="piece")
     image: Mapped[str] = mapped_column(Text, nullable=False, default="")
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="active")

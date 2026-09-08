@@ -337,6 +337,8 @@ export const fr = {
     noItems: 'Aucun article ajouté pour le moment',
     customerRequired: 'Veuillez sélectionner un client',
     itemsRequired: 'Veuillez ajouter au moins un produit',
+    availabilityRequired: 'Veuillez choisir Sur place ou Sur commande pour chaque produit',
+    selectAvailability: 'Type de vente',
     totalMustBePositive: 'Le total doit être supérieur à zéro',
     deleteTitle: 'Supprimer la Vente',
     searchInvoicePlaceholder: 'Rechercher par facture ou client...',

@@ -100,7 +100,6 @@ def make_product():
             options_json={},
             purchase_price=10.0,
             selling_price=20.0,
-            availability="sur_place",
             unit="piece",
             image="",
             status="active",

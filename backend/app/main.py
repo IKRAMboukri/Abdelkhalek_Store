@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 # Legacy migrations for databases created before the inventory removal.
 LEGACY_MIGRATIONS = [
     "DROP TABLE IF EXISTS inventory_movements",
-    'ALTER TABLE products ADD COLUMN availability VARCHAR(20) NOT NULL DEFAULT \'sur_commande\'',
+    'ALTER TABLE products DROP COLUMN availability',
     "ALTER TABLE products DROP COLUMN stock",
     "ALTER TABLE products DROP COLUMN min_stock",
     'ALTER TABLE sale_items ADD COLUMN availability VARCHAR(20) NOT NULL DEFAULT \'sur_commande\'',
@@ -33,7 +33,6 @@ _PRODUCT_COLUMNS = [
     "options_json",
     "purchase_price",
     "selling_price",
-    "availability",
     "unit",
     "image",
     "status",
@@ -82,7 +81,6 @@ def _make_category_id_nullable() -> None:
             options_json JSON NOT NULL,
             purchase_price NUMERIC(12, 2) NOT NULL,
             selling_price NUMERIC(12, 2) NOT NULL,
-            availability VARCHAR(20) NOT NULL,
             unit VARCHAR(20) NOT NULL,
             image TEXT NOT NULL,
             status VARCHAR(20) NOT NULL,
