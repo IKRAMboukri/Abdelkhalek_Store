@@ -492,20 +492,20 @@ export function NewSale() {
                                 </button>
                               </div>
                             ) : (
-                              <div className="inline-flex items-center gap-1">
-                                <span>
+                              <span className="inline-flex items-center gap-1.5">
+                                <span className="font-medium">
                                   {currencySymbol}
                                   {item.unitPrice.toFixed(2)}
                                 </span>
                                 <button
                                   type="button"
                                   onClick={() => startEditPrice(item.productId, item.unitPrice)}
-                                  className="p-1 rounded text-text-muted hover:text-primary-600 hover:bg-primary-50 transition-colors cursor-pointer"
+                                  className="inline-flex items-center justify-center p-0.5 rounded hover:bg-gray-100 transition-colors cursor-pointer text-gray-400 hover:text-primary-600"
                                   title="Modifier le prix"
                                 >
-                                  <Pencil size={12} />
+                                  <Pencil size={13} />
                                 </button>
-                              </div>
+                              </span>
                             )}
                           </td>
                           <td className="py-2 text-right">
