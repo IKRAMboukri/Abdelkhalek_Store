@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, Plus, Trash2, Minus, ShoppingCart, User, Printer } from 'lucide-react'
+import { Search, Plus, Trash2, Minus, ShoppingCart, User, Printer, Pencil, Check } from 'lucide-react'
 import type { Customer, Product, StoreSettings, SaleItem, SaleItemAvailability, Invoice } from '@/types'
 import { Button } from '@/components/ui/Button'
 import { Card } from '@/components/ui/Card'
@@ -66,6 +66,9 @@ export function NewSale() {
   const [customerSearchTerm, setCustomerSearchTerm] = useState('')
 
   const [addClientOpen, setAddClientOpen] = useState(false)
+
+  const [editingPriceId, setEditingPriceId] = useState<string | null>(null)
+  const [editingPriceValue, setEditingPriceValue] = useState('')
 
   const [showInvoiceModal, setShowInvoiceModal] = useState(false)
   const [completedInvoice, setCompletedInvoice] = useState<Invoice | null>(null)
@@ -165,6 +168,33 @@ export function NewSale() {
 
   const removeFromCart = (productId: string) => {
     setCartItems((prev) => prev.filter((item) => item.productId !== productId))
+  }
+
+  const startEditPrice = (productId: string, currentPrice: number) => {
+    setEditingPriceId(productId)
+    setEditingPriceValue(currentPrice.toFixed(2))
+  }
+
+  const confirmEditPrice = (productId: string) => {
+    const parsed = toMoney(editingPriceValue)
+    if (parsed <= 0) {
+      showToast('error', 'Le prix doit être un nombre positif')
+      return
+    }
+    setCartItems((prev) =>
+      prev.map((item) => {
+        if (item.productId !== productId) return item
+        const unitPrice = parsed
+        return { ...item, unitPrice, total: lineTotal({ ...item, unitPrice }) }
+      }),
+    )
+    setEditingPriceId(null)
+    setEditingPriceValue('')
+  }
+
+  const cancelEditPrice = () => {
+    setEditingPriceId(null)
+    setEditingPriceValue('')
   }
 
   const subtotal = useMemo(() => sumSubtotal(cartItems), [cartItems])
@@ -438,8 +468,45 @@ export function NewSale() {
                             </select>
                           </td>
                           <td className="py-2 text-right text-text-primary">
-                            {currencySymbol}
-                            {item.unitPrice.toFixed(2)}
+                            {editingPriceId === item.productId ? (
+                              <div className="inline-flex items-center gap-1">
+                                <input
+                                  type="number"
+                                  min="0"
+                                  step="0.01"
+                                  value={editingPriceValue}
+                                  onChange={(e) => setEditingPriceValue(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') confirmEditPrice(item.productId)
+                                    if (e.key === 'Escape') cancelEditPrice()
+                                  }}
+                                  autoFocus
+                                  className="w-24 text-right rounded border border-primary-300 bg-white px-1 py-0.5 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary-500"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => confirmEditPrice(item.productId)}
+                                  className="p-1 rounded text-green-600 hover:text-green-700 hover:bg-green-50 transition-colors cursor-pointer"
+                                >
+                                  <Check size={14} />
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="inline-flex items-center gap-1">
+                                <span>
+                                  {currencySymbol}
+                                  {item.unitPrice.toFixed(2)}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() => startEditPrice(item.productId, item.unitPrice)}
+                                  className="p-1 rounded text-text-muted hover:text-primary-600 hover:bg-primary-50 transition-colors cursor-pointer"
+                                  title="Modifier le prix"
+                                >
+                                  <Pencil size={12} />
+                                </button>
+                              </div>
+                            )}
                           </td>
                           <td className="py-2 text-right">
                             <div className="inline-flex items-center gap-1">

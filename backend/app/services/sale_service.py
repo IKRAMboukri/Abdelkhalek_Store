@@ -9,9 +9,11 @@ from app.schemas.sale import SaleCreate, SaleUpdate
 
 
 class SaleService:
-    """Sale lifecycle. Totals are always recalculated server-side from the
-    current product prices; each line's availability (sur_place/sur_commande)
-    is captured on the sale item at the moment of sale."""
+    """Sale lifecycle. Each line's unit price is taken from the client request
+    when provided (> 0), otherwise falls back to the current product price.
+    This allows per-sale price overrides without modifying the product table.
+    Each line's availability (sur_place/sur_commande) is captured on the sale
+    item at the moment of sale."""
 
     def __init__(self, db: Session) -> None:
         self.db = db
@@ -50,7 +52,7 @@ class SaleService:
             quantity = int(item.quantity)
             if quantity <= 0:
                 raise ValueError(f"Invalid quantity for {product.name}")
-            unit_price = float(product.selling_price)
+            unit_price = float(item.unitPrice) if item.unitPrice > 0 else float(product.selling_price)
             total = round(unit_price * quantity, 2)
             subtotal += total
             items.append(
