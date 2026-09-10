@@ -610,22 +610,20 @@ export function NewSale() {
                       onChange={(e) => setAdvance(Number(e.target.value) || 0)}
                       placeholder="0.00"
                     />
-                    {advance > 0 && (
-                      <div className="mt-2 space-y-1 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-text-muted">{t('common.subtotal')}:</span>
-                          <span className="text-text-primary">{currencySymbol}{total.toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-text-muted">{t('sales.avance')}:</span>
-                          <span className="text-primary-600">-{currencySymbol}{Math.min(advance, total).toFixed(2)}</span>
-                        </div>
-                        <div className="flex justify-between font-bold border-t border-border pt-1">
-                          <span className="text-text-primary">{t('sales.resteAPayer')}:</span>
-                          <span className="text-text-primary">{currencySymbol}{remainingBalance.toFixed(2)}</span>
-                        </div>
+                    <div className="mt-2 space-y-1 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-text-muted">{t('common.subtotal')}:</span>
+                        <span className="text-text-primary">{currencySymbol}{total.toFixed(2)}</span>
                       </div>
-                    )}
+                      <div className="flex justify-between">
+                        <span className="text-text-muted">{t('sales.avance')}:</span>
+                        <span className="text-text-primary">-{currencySymbol}{Math.min(advance, total).toFixed(2)}</span>
+                      </div>
+                      <div className="flex justify-between font-bold border-t border-border pt-1">
+                        <span className="text-text-primary">{t('sales.resteAPayer')}:</span>
+                        <span className="text-text-primary">{currencySymbol}{remainingBalance.toFixed(2)}</span>
+                      </div>
+                    </div>
                   </div>
                 )}
                 <div>
@@ -678,7 +676,7 @@ export function NewSale() {
                         {total.toFixed(2)}
                       </span>
                     </div>
-                    {hasSurCommande && advance > 0 && (
+                    {hasSurCommande && (
                       <>
                         <div className="flex justify-between text-sm">
                           <span className="text-text-muted">{t('sales.avance')}</span>
@@ -740,7 +738,7 @@ export function NewSale() {
                         {total.toFixed(2)}
                       </span>
                     </div>
-                    {hasSurCommande && advance > 0 && (
+                    {hasSurCommande && (
                       <>
                         <div className="flex justify-between text-xs mt-1">
                           <span className="text-text-muted">{t('sales.avance')}:</span>
