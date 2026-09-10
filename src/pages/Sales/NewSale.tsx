@@ -70,6 +70,8 @@ export function NewSale() {
   const [editingPriceId, setEditingPriceId] = useState<string | null>(null)
   const [editingPriceValue, setEditingPriceValue] = useState('')
 
+  const [advance, setAdvance] = useState(0)
+
   const [showInvoiceModal, setShowInvoiceModal] = useState(false)
   const [completedInvoice, setCompletedInvoice] = useState<Invoice | null>(null)
 
@@ -206,12 +208,32 @@ export function NewSale() {
 
   const currencySymbol = settings?.currencySymbol ?? 'DH'
 
+  const hasSurCommande = useMemo(
+    () => cartItems.some((item) => item.availability === 'sur_commande'),
+    [cartItems],
+  )
+
+  const clampedAdvance = useMemo(() => {
+    if (!hasSurCommande) return 0
+    return Math.min(toMoney(advance), total)
+  }, [advance, total, hasSurCommande])
+
+  const remainingBalance = useMemo(
+    () => Math.round((total - clampedAdvance) * 100) / 100,
+    [total, clampedAdvance],
+  )
+
+  useEffect(() => {
+    if (!hasSurCommande) setAdvance(0)
+  }, [hasSurCommande])
+
   const validate = (totalValue: number): string | null => {
     if (!selectedCustomerId) return t('sales.customerRequired')
     if (cartItems.length === 0) return t('sales.itemsRequired')
     if (cartItems.some((item) => item.availability !== 'sur_commande' && item.availability !== 'sur_place'))
       return t('sales.availabilityRequired')
     if (!(totalValue > 0)) return t('sales.totalMustBePositive')
+    if (hasSurCommande && toMoney(advance) > totalValue) return t('sales.avanceExceedsTotal')
     return null
   }
 
@@ -245,6 +267,7 @@ export function NewSale() {
         subtotal: freshSubtotal,
         discount: freshDiscount,
         total: freshTotal,
+        advanceAmount: hasSurCommande ? Math.min(toMoney(advance), freshTotal) : 0,
         invoiceNumber: 'INV-TEMP-' + Date.now(),
         paymentMethod,
         notes,
@@ -278,8 +301,8 @@ export function NewSale() {
         discount: createdSale.discount,
         total: createdSale.total,
         paymentMethod: createdSale.paymentMethod,
-        amountPaid: createdSale.total,
-        remainingBalance: 0,
+        amountPaid: createdSale.advanceAmount,
+        remainingBalance: Math.round((createdSale.total - createdSale.advanceAmount) * 100) / 100,
         status: createdSale.status,
         notes: createdSale.notes,
         createdAt: createdSale.createdAt,
@@ -575,6 +598,36 @@ export function NewSale() {
                     ))}
                   </div>
                 </div>
+                {hasSurCommande && (
+                  <div>
+                    <Input
+                      label={t('sales.avance')}
+                      type="number"
+                      min={0}
+                      max={total}
+                      step={0.01}
+                      value={advance || ''}
+                      onChange={(e) => setAdvance(Number(e.target.value) || 0)}
+                      placeholder="0.00"
+                    />
+                    {advance > 0 && (
+                      <div className="mt-2 space-y-1 text-sm">
+                        <div className="flex justify-between">
+                          <span className="text-text-muted">{t('common.subtotal')}:</span>
+                          <span className="text-text-primary">{currencySymbol}{total.toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-text-muted">{t('sales.avance')}:</span>
+                          <span className="text-primary-600">-{currencySymbol}{Math.min(advance, total).toFixed(2)}</span>
+                        </div>
+                        <div className="flex justify-between font-bold border-t border-border pt-1">
+                          <span className="text-text-primary">{t('sales.resteAPayer')}:</span>
+                          <span className="text-text-primary">{currencySymbol}{remainingBalance.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div>
                   <Input
                     label={t('common.notes')}
@@ -625,6 +678,24 @@ export function NewSale() {
                         {total.toFixed(2)}
                       </span>
                     </div>
+                    {hasSurCommande && advance > 0 && (
+                      <>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-text-muted">{t('sales.avance')}</span>
+                          <span className="text-primary-600">
+                            -{currencySymbol}
+                            {clampedAdvance.toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-sm font-bold">
+                          <span className="text-text-primary">{t('sales.resteAPayer')}</span>
+                          <span className="text-text-primary">
+                            {currencySymbol}
+                            {remainingBalance.toFixed(2)}
+                          </span>
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   <div className="pt-2">
@@ -669,6 +740,24 @@ export function NewSale() {
                         {total.toFixed(2)}
                       </span>
                     </div>
+                    {hasSurCommande && advance > 0 && (
+                      <>
+                        <div className="flex justify-between text-xs mt-1">
+                          <span className="text-text-muted">{t('sales.avance')}:</span>
+                          <span className="text-primary-600">
+                            -{currencySymbol}
+                            {clampedAdvance.toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-sm font-bold mt-1">
+                          <span className="text-text-primary">{t('sales.resteAPayer')}:</span>
+                          <span className="text-text-primary">
+                            {currencySymbol}
+                            {remainingBalance.toFixed(2)}
+                          </span>
+                        </div>
+                      </>
+                    )}
                   </div>
                   <div className="flex justify-between text-xs text-text-muted">
                     <span>{t('common.paymentMethod')}:</span>

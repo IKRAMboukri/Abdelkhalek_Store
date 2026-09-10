@@ -23,6 +23,7 @@ class SaleCreate(BaseModel):
     subtotal: float = 0
     discount: float = Field(default=0, ge=0)
     total: float = 0
+    advanceAmount: float = Field(default=0, ge=0)
     paymentMethod: Literal["cash", "bank_transfer"] = "cash"
     notes: str = ""
     status: str = "completed"
@@ -59,6 +60,8 @@ class SaleRead(ApiModel):
     subtotal: float
     discount: float
     total: float
+    advance_amount: float = 0
+    remaining_amount: float = 0
     payment_method: str
     status: str
     notes: str

@@ -63,6 +63,7 @@ export interface Sale {
   subtotal: number;
   discount: number;
   total: number;
+  advanceAmount: number;
   paymentMethod: 'cash' | 'bank_transfer';
   status: 'completed' | 'pending' | 'cancelled' | 'refunded';
   notes: string;

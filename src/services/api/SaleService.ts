@@ -31,6 +31,7 @@ export class SaleService implements ISaleService {
       subtotal: sale.subtotal,
       discount: sale.discount,
       total: sale.total,
+      advanceAmount: sale.advanceAmount ?? 0,
       paymentMethod: sale.paymentMethod,
       notes: sale.notes,
       status: sale.status,

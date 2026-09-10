@@ -17,6 +17,7 @@ class Sale(Base):
     subtotal: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False, default=0)
     discount: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False, default=0)
     total: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False, default=0)
+    advance_amount: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False, default=0)
     payment_method: Mapped[str] = mapped_column(String(20), nullable=False, default="cash")
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="completed")
     notes: Mapped[str] = mapped_column(Text, nullable=False, default="")

@@ -213,6 +213,7 @@ export interface RawSale {
   subtotal: number;
   discount: number;
   total: number;
+  advanceAmount?: number;
   paymentMethod: Sale['paymentMethod'];
   status: Sale['status'];
   notes: string;
@@ -229,6 +230,7 @@ export function mapSale(raw: RawSale): Sale {
     subtotal: num(raw.subtotal),
     discount: num(raw.discount),
     total: num(raw.total),
+    advanceAmount: num(raw.advanceAmount),
     paymentMethod: raw.paymentMethod,
     status: raw.status,
     notes: raw.notes,

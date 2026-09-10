@@ -68,6 +68,7 @@ class SaleService:
 
         discount = round(min(float(data.discount), subtotal), 2)
         total = round(subtotal - discount, 2)
+        advance_amount = round(min(float(data.advanceAmount), total), 2)
         invoice_number = self.repo.next_invoice_number(now.year)
 
         sale = Sale(
@@ -76,6 +77,7 @@ class SaleService:
             subtotal=subtotal,
             discount=discount,
             total=total,
+            advance_amount=advance_amount,
             payment_method=data.paymentMethod,
             status=data.status,
             notes=data.notes,

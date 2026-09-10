@@ -367,6 +367,18 @@ export function SalesList() {
                   <span className="text-text-primary">{t('common.total')}</span>
                   <span className="text-text-primary">DH {viewSale.total.toFixed(2)}</span>
                 </div>
+                {viewSale.advanceAmount > 0 && viewSale.items.some(i => i.availability === 'sur_commande') && (
+                  <>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-text-muted">{t('sales.avance')}</span>
+                      <span className="text-primary-600">-DH {viewSale.advanceAmount.toFixed(2)}</span>
+                    </div>
+                    <div className="flex justify-between text-sm font-bold">
+                      <span className="text-text-primary">{t('sales.resteAPayer')}</span>
+                      <span className="text-text-primary">DH {(viewSale.total - viewSale.advanceAmount).toFixed(2)}</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 

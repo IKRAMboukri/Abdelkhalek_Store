@@ -21,6 +21,7 @@ LEGACY_MIGRATIONS = [
     "ALTER TABLE products DROP COLUMN stock",
     "ALTER TABLE products DROP COLUMN min_stock",
     'ALTER TABLE sale_items ADD COLUMN availability VARCHAR(20) NOT NULL DEFAULT \'sur_commande\'',
+    "ALTER TABLE sales ADD COLUMN advance_amount NUMERIC(12,2) NOT NULL DEFAULT 0",
 ]
 
 # Column list / select list shared by the SQLite products rebuild below.
