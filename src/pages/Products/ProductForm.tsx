@@ -212,8 +212,8 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
   }
 
   const formContent = (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
         <div className="md:col-span-2">
           <Input
             label={t('products.productName')}
@@ -282,7 +282,7 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
             onChange={(e) => handleChange('description', e.target.value)}
             placeholder={t('settings.descriptionPlaceholder')}
             disabled={loading}
-            rows={3}
+            rows={2}
           />
         </div>
 
@@ -297,7 +297,7 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
             disabled={loading}
           />
           {formData.image ? (
-            <div className="flex items-center gap-3 h-12 px-4 rounded-xl border border-gray-200 bg-gray-50/50">
+            <div className="flex items-center gap-3 h-10 px-4 rounded-xl border border-gray-200 bg-gray-50/50">
               {formData.image.startsWith('data:application/pdf') ? (
                 <FileText size={16} className="text-red-500 shrink-0" />
               ) : (
@@ -319,7 +319,7 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
               type="button"
               onClick={() => fileInputRef.current?.click()}
               disabled={loading}
-              className="w-full h-12 flex items-center gap-3 px-4 rounded-xl border border-gray-200 bg-gray-50/50 hover:border-primary-300 hover:bg-primary-50/30 transition-colors cursor-pointer disabled:opacity-50"
+              className="w-full h-10 flex items-center gap-3 px-4 rounded-xl border border-gray-200 bg-gray-50/50 hover:border-primary-300 hover:bg-primary-50/30 transition-colors cursor-pointer disabled:opacity-50"
             >
               <Upload size={16} className="text-primary-500 shrink-0" />
               <span className="flex-1 text-left text-sm text-gray-400">{t('common.image')}</span>
@@ -329,7 +329,7 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
         </div>
       </div>
 
-      <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+      <div className="flex items-center justify-end gap-3 pt-3 border-t border-gray-100">
         <Button variant="outline" onClick={onCancel} disabled={loading} type="button" className="!rounded-xl">
           {t('common.cancel')}
         </Button>
@@ -357,7 +357,7 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200/80 overflow-hidden">
-          <div className="px-8 pt-8 pb-6 border-b border-gray-100">
+          <div className="px-6 pt-5 pb-4 border-b border-gray-100">
             <div className="flex items-center gap-3 mb-1.5">
               <div className="w-9 h-9 rounded-xl bg-primary-50 flex items-center justify-center">
                 <Package size={18} className="text-primary-600" />
@@ -383,7 +383,7 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
   return (
     <div className="animate-fade-in w-full">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200/80 overflow-hidden">
-        <div className="px-8 pt-8 pb-6 border-b border-gray-100">
+        <div className="px-6 pt-5 pb-4 border-b border-gray-100">
           <div className="flex items-center gap-3 mb-1.5">
             <div className="w-9 h-9 rounded-xl bg-primary-50 flex items-center justify-center">
               <Package size={18} className="text-primary-600" />
@@ -405,7 +405,7 @@ export function ProductForm({ product, onSave, onCancel, loading = false, layout
             </button>
           </div>
         </div>
-        <div className="px-8 py-8">
+        <div className="px-6 py-5">
           {formContent}
         </div>
       </div>
