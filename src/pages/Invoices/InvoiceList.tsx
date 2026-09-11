@@ -1,8 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import type { Invoice, FilterOptions, PaginatedResult } from '@/types'
-import { Card, Table, type TableColumn, Pagination, SearchBar, FilterBar, type FilterConfig, StatusBadge, EmptyState } from '@/components/ui'
-import { invoiceService } from '@/services'
+import { Wallet } from 'lucide-react'
+import type { Invoice, Payment, FilterOptions, PaginatedResult } from '@/types'
+import { Button, Card, Table, type TableColumn, Pagination, SearchBar, FilterBar, type FilterConfig, StatusBadge, EmptyState } from '@/components/ui'
+import { InvoicePaymentModal } from '@/components/invoice/InvoicePaymentModal'
+import { invoiceService, paymentService } from '@/services'
+import { useToast } from '@/hooks/useToast'
 import { useLocale } from '@/hooks/useLocale'
 import { PAGINATION_DEFAULTS } from '@/constants'
 import { useDebounce } from '@/hooks/useDebounce'
@@ -10,6 +13,7 @@ import { useDebounce } from '@/hooks/useDebounce'
 export function InvoiceList() {
   const navigate = useNavigate()
   const { t } = useLocale()
+  const { addToast } = useToast()
 
   const filterConfig: FilterConfig[] = [
     {
@@ -42,8 +46,13 @@ export function InvoiceList() {
   const [search, setSearch] = useState('')
   const [paymentFilter, setPaymentFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
-  const [loading, setLoading] = useState(true)
+const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [paymentInvoice, setPaymentInvoice] = useState<Invoice | null>(null)
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false)
+  const [paymentHistory, setPaymentHistory] = useState<Payment[]>([])
+  const [historyLoading, setHistoryLoading] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const debouncedSearch = useDebounce(search, 300)
 
   const fetchInvoices = useCallback(async () => {
@@ -76,6 +85,44 @@ export function InvoiceList() {
     if (key === 'paymentMethod') setPaymentFilter(value)
     if (key === 'status') setStatusFilter(value)
     setPage(1)
+  }
+
+  const openPaymentModal = (invoice: Invoice) => {
+    setPaymentInvoice(invoice)
+    setPaymentHistory([])
+    setPaymentModalOpen(true)
+    setHistoryLoading(true)
+    paymentService
+      .getPaymentsBySale(invoice.saleId)
+      .then(setPaymentHistory)
+      .catch(() => setPaymentHistory([]))
+      .finally(() => setHistoryLoading(false))
+  }
+
+  const handleRecordPayment = async ({ amount, method }: { amount: number; method: 'cash' | 'bank_transfer' }) => {
+    if (!paymentInvoice) return
+    setSubmitting(true)
+    try {
+      await paymentService.createPayment({
+        saleId: paymentInvoice.saleId,
+        invoiceNumber: paymentInvoice.invoiceNumber,
+        customerId: paymentInvoice.customerId,
+        customerName: paymentInvoice.customerName,
+        amount,
+        method,
+        status: 'completed',
+        reference: '',
+        notes: '',
+      })
+      addToast({ type: 'success', title: t('credits.paymentRecorded') })
+      setPaymentModalOpen(false)
+      setPaymentInvoice(null)
+      fetchInvoices()
+    } catch {
+      addToast({ type: 'error', title: t('credits.paymentFailed') })
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const columns: TableColumn<Invoice>[] = [
@@ -115,6 +162,26 @@ export function InvoiceList() {
       key: 'status',
       label: t('common.status'),
       render: (item) => <StatusBadge status={item.status} />,
+    },
+    {
+      key: 'actions',
+      label: t('common.actions'),
+      render: (item) =>
+        item.remainingBalance > 0 ? (
+          <Button
+            variant="ghost"
+            size="sm"
+            icon={<Wallet size={16} />}
+            onClick={(e) => {
+              e.stopPropagation()
+              openPaymentModal(item)
+            }}
+          >
+            {t('invoices.addPayment')}
+          </Button>
+        ) : (
+          <span className="text-xs text-text-muted">{t('invoices.paidInFull')}</span>
+        ),
     },
   ]
 
@@ -182,6 +249,22 @@ export function InvoiceList() {
           </div>
         )}
       </Card>
+
+      <InvoicePaymentModal
+        open={paymentModalOpen}
+        onClose={() => {
+          setPaymentModalOpen(false)
+          setPaymentInvoice(null)
+        }}
+        onConfirm={handleRecordPayment}
+        total={paymentInvoice?.total ?? 0}
+        paid={paymentInvoice?.amountPaid ?? 0}
+        remaining={paymentInvoice?.remainingBalance ?? 0}
+        title={`${t('invoices.addPayment')} - ${paymentInvoice?.invoiceNumber ?? ''}`}
+        history={paymentHistory}
+        historyLoading={historyLoading}
+        loading={submitting}
+      />
     </div>
   )
 }

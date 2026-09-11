@@ -195,6 +195,9 @@ export const fr = {
     searchPlaceholder: 'Rechercher par n° de facture, client ou date...',
     noInvoices: 'Aucune facture trouvée.',
     invoicePreview: 'Aperçu de la Facture',
+    addPayment: 'Ajouter un Paiement',
+    savePayment: 'Enregistrer le Paiement',
+    paymentPlaceholder: 'Montant du paiement...',
   },
   dashboard: {
     title: 'Tableau de Bord',

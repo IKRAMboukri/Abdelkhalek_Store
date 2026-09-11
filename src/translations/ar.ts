@@ -195,6 +195,9 @@ export const ar = {
     searchPlaceholder: 'بحث برقم الفاتورة أو العميل أو التاريخ...',
     noInvoices: 'لا توجد فواتير.',
     invoicePreview: 'معاينة الفاتورة',
+    addPayment: 'إضافة دفعة',
+    savePayment: 'حفظ الدفعة',
+    paymentPlaceholder: 'مبلغ الدفعة...',
   },
   dashboard: {
     title: 'لوحة التحكم',

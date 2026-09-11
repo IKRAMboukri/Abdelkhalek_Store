@@ -46,4 +46,9 @@ export class PaymentService implements IPaymentService {
     const raws = await get<RawPayment[]>(`${BASE}/by-method/${method}`);
     return raws.map(mapPayment);
   }
+
+  async getPaymentsBySale(saleId: string): Promise<Payment[]> {
+    const raws = await get<RawPayment[]>(`${BASE}/by-sale/${Number(saleId)}`);
+    return raws.map(mapPayment);
+  }
 }

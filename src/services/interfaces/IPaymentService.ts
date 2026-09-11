@@ -8,4 +8,5 @@ export interface IPaymentService {
   deletePayment(id: string): Promise<boolean>;
   getPaymentsByDateRange(startDate: string, endDate: string): Promise<Payment[]>;
   getPaymentsByMethod(method: Payment['method']): Promise<Payment[]>;
+  getPaymentsBySale(saleId: string): Promise<Payment[]>;
 }

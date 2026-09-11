@@ -21,15 +21,18 @@ export function InvoiceDetail() {
     const fetchInvoice = async () => {
       try {
         if (!id) throw new Error('No invoice ID')
+        // Prefer the backend invoice (computes real paid/remaining balances
+        // from the payment history). Fall back to the local sale build if the
+        // invoice endpoint does not resolve.
+        const inv = await invoiceService.getInvoiceById(id)
+        if (inv) {
+          setInvoice(inv)
+          return
+        }
         const saleId = id.replace('inv-', 'sale-')
         const sale = await saleService.getSaleById(saleId)
         if (!sale) {
-          const inv = await invoiceService.getInvoiceById(id)
-          if (inv) {
-            setInvoice(inv)
-          } else {
-            setError(t('settings.invoiceNotFound'))
-          }
+          setError(t('settings.invoiceNotFound'))
           return
         }
         const [customers, storeSettings] = await Promise.all([
@@ -37,8 +40,8 @@ export function InvoiceDetail() {
           settingsService.getStoreSettings(),
         ])
         const customer = customers.find((c) => c.id === sale.customerId)
-        const inv = buildInvoice(sale, storeSettings, customer)
-        setInvoice(inv)
+        const built = buildInvoice(sale, storeSettings, customer)
+        setInvoice(built)
       } catch {
         setError(t('settings.failedToLoadInvoice'))
       } finally {

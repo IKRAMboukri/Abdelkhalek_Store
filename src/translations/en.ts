@@ -195,6 +195,9 @@ export const en = {
     searchPlaceholder: 'Search by invoice #, customer, or date...',
     noInvoices: 'No invoices found.',
     invoicePreview: 'Invoice Preview',
+    addPayment: 'Add Payment',
+    savePayment: 'Save Payment',
+    paymentPlaceholder: 'Payment amount...',
   },
   dashboard: {
     title: 'Dashboard',
